@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 import { Practice } from "./practice.entity"
 
 @Entity()
@@ -8,9 +8,10 @@ export class Hobbies {
 
     @Column()
     name: string
-    @OneToMany(
-        type => Practice,
-        practice => practice.hobbies , 
-    )
-    practices :Practice
+  
+    @ManyToOne(
+        type => Practice, 
+        (practice) => practice.id)
+    practice: Practice
 }
+ 

@@ -50,12 +50,12 @@ export class PracticeController {
     return this.practiceService.update(id, updatePracticeDto);
   }
 
-//   @Delete(':id')
-//   remove(@Param('id') id: number) {
-//     const data= this . practiceService.findOne(id)
-//     if(!data){
-//       throw new HttpException(`could not find data for the given ${id}`,HttpStatus.NOT_FOUND)
-//       }
-//     return this.practiceService.remove( id);
-//   }
+  @Delete(':id')
+  remove(@Param('id') id: number) {
+    const data= this . practiceService.findOne(id)
+    if(!data){
+      throw new HttpException(`could not find data for the given ${id}`,HttpStatus.NOT_FOUND)
+      }
+    return this.practiceService.remove( id);
+  }
 }

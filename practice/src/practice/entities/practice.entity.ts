@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 import { Hobbies } from "./hobbies.entity"
 
 @Entity()
@@ -15,9 +15,8 @@ export class Practice {
     @Column()
     age:number
 
-    @JoinTable()
-    @OneToMany(tye=>Hobbies,
-        hobby=>hobby.practices,
-    )
-    hobbies:string[]
+    @OneToMany( 
+    type=> Hobbies, 
+    (hobby) =>hobby.id )
+    hobbies:Hobbies[]
 }

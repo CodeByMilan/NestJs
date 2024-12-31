@@ -12,11 +12,13 @@ export class PracticeService {
     private readonly practiceRepository: Repository<Practice>,
   ){}
   async create(createPracticeDto: CreatePracticeDto) {
-    const practiceData = new Practice()
-    practiceData.name=createPracticeDto.name
-    practiceData.email=createPracticeDto.email
-    practiceData.age=createPracticeDto.age
-    this.practiceRepository.save(practiceData)
+    // const practiceData = new Practice()
+    // practiceData.name=createPracticeDto.name
+    // practiceData.email=createPracticeDto.email
+    // practiceData.age=createPracticeDto.age
+    // this.practiceRepository.save(practiceData)
+    const practice = this.practiceRepository.create(createPracticeDto);
+    return this.practiceRepository.save(practice);
   }
 
   findAll() {
@@ -24,7 +26,8 @@ export class PracticeService {
   }
 
   async findOne(id: number) {
-    const practice = await this.practiceRepository.findOne({where:{id}});
+    const practice = await this.practiceRepository.findOne({where:{id}
+    },);
     if (!practice) {
       throw new HttpException('Practice not found', HttpStatus.NOT_FOUND);
       }
@@ -32,16 +35,28 @@ export class PracticeService {
   }
 
  async  update(id: number, updatePracticeDto: UpdatePracticeDto) {
-    await this.findOne(id) 
-    const practice = await this.practiceRepository.update(id, updatePracticeDto);
-    return practice
+    // await this.findOne(id) 
+    // const practice = await this.practiceRepository.update(id, updatePracticeDto);
+    // return practice
+
+    const practice = await this.practiceRepository.preload(
+      { id,
+        ...updatePracticeDto,
+       },
+    )
+    if (!practice) {
+      throw new HttpException('Practice not found', HttpStatus.NOT_FOUND);
+      }
+      return this.practiceRepository.save(practice); 
    
   }
 
-  // remove(id: string   ) {
-  //   const index = this.practiceRepository.findIndex(item=> item.id==id);
-  //   if(index>=0){
-  //     this.practiceRepository.splice(index,1);
-  //     }
-  // }
+   async remove(id: number ) {
+    const practice = await this.practiceRepository.findOne({where:{id}});
+    if (!practice) {
+      throw new HttpException('Practice not found', HttpStatus.NOT_FOUND);
+      }
+      return this.practiceRepository.remove(practice);
+   
+    }
 }
