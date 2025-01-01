@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { createUserDto } from './dto/create-user.dto';
@@ -29,12 +30,12 @@ findAll(@Query('role')role?:'INTERN'|'ENGINEER'|'ADMIN') {
   }
 
   @Post()
-  create(@Body() user: createUserDto) {
+  create(@Body(ValidationPipe) user: createUserDto) {
     return this.userService.create(user);
   }
 
   @Patch(':id')
-  update(@Param('id',ParseIntPipe) id: number, @Body() userUpadte: updateUserDto) {
+  update(@Param('id',ParseIntPipe) id: number, @Body(ValidationPipe) userUpadte: updateUserDto) {
     return this.userService.update(id,userUpadte);
   }
   @Delete(':id')
