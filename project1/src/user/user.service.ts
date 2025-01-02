@@ -1,11 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { createUserDto } from './dto/create-user.dto';
 import { updateUserDto } from './dto/update-user.dto';
 import { User } from 'src/database/entities/user.entity';
-import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
+import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary'
 import { Readable } from 'stream';
+import { logInDto } from './dto/login-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class UserService {
@@ -30,6 +34,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private jwtService: JwtService,
   ) {}
 
   async findAll(role?: 'ADMIN'|'CUSTOMER'): Promise<User[]> {
@@ -51,9 +56,10 @@ export class UserService {
     return user;
   }
 
-  async create(userDto: createUserDto): Promise<User> {
-    const newUser = this.userRepository.create(userDto);
-    return this.userRepository.save(newUser);
+  async create(userDto:createUserDto): Promise<User> {
+    const hashedPassword = await bcrypt.hash(userDto.password, 10); 
+    const user = this.userRepository.create({ ...userDto, password: hashedPassword });
+    return this.userRepository.save(user);
   }
 
   async update(id: number, updatedUser: updateUserDto): Promise<User> {
@@ -69,4 +75,22 @@ export class UserService {
     await this.userRepository.delete(id);
     return user;
   }
+
+
+  //login
+  async login(loginDto: logInDto): Promise<{access_token:string}> {
+    const { email, password } = loginDto;
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    const payload = { sub: user.id, email: user.email, role: user.role };
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+  }
+}
 }

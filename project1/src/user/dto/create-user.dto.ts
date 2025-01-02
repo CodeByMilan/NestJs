@@ -10,6 +10,9 @@ export class createUserDto{
     @IsEmail()
     email:string;
 
+    @IsString()
+    password:string
+
     @IsEnum(['ADMIN','CUSTOMER'],{
         message:'Invalid role'
     })

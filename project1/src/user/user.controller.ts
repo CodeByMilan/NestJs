@@ -17,6 +17,7 @@ import { createUserDto } from './dto/create-user.dto';
 import { updateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { log } from 'console';
+import { logInDto } from './dto/login-user.dto';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -31,7 +32,7 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
-  @Post()
+  @Post('register')
   @UseInterceptors(FileInterceptor('image')) 
   async create(@Body(ValidationPipe) user: createUserDto, @UploadedFile() file: Express.Multer.File) {
     try {
@@ -59,4 +60,15 @@ export class UserController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.userService.delete(id);
   }
+//login route
+@Post('login')
+async login(@Body(ValidationPipe) loginDto: logInDto) {
+  try {
+    const token = await this.userService.login(loginDto);
+    return { accessToken: token };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
 }
