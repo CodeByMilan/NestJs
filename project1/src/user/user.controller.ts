@@ -21,6 +21,7 @@ import { log } from 'console';
 import { logInDto } from './dto/login-user.dto';
 import { UserAuthenticationService } from 'src/auth/userAuthentication.service';
 import { AuthGuard } from 'src/auth/authGuard';
+import { ROLE } from 'src/database/entities/user.entity';
 @Controller('user')
 export class UserController {
   constructor(
@@ -48,7 +49,7 @@ export class UserController {
     }
 
   @Get()
-  findAll(@Query('role') role?: 'ADMIN' | 'CUSTOMER') {
+  findAll(@Query('role') role?: ROLE) {
     return this.userService.findAll(role);
   }
   @UseGuards(AuthGuard)
@@ -67,7 +68,7 @@ export class UserController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.userService.delete(id);
   }
-  
+
 //login route
 @Post('login')
 async login(@Body(ValidationPipe) loginDto: logInDto) {

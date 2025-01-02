@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { createUserDto } from './dto/create-user.dto';
 import { updateUserDto } from './dto/update-user.dto';
-import { User } from 'src/database/entities/user.entity';
+import { ROLE, User } from 'src/database/entities/user.entity';
 import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary'
 import { Readable } from 'stream';
 import * as bcrypt from 'bcrypt';
@@ -34,7 +34,7 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async findAll(role?: 'ADMIN'|'CUSTOMER'): Promise<User[]> {
+  async findAll(role?:ROLE): Promise<User[]> {
     if (role) {
       const users = await this.userRepository.find({ where: { role } });
       if (users.length === 0) {

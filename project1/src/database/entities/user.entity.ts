@@ -1,5 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
+ export enum ROLE {
+  ADMIN = 'admin',
+  CUSTOMER='customer'
+}
 @Entity('users') 
 export class User {
   @PrimaryGeneratedColumn()
@@ -14,8 +18,8 @@ export class User {
   @Column()
   password: string;
 
-  @Column({default:'customer'})
-  role: string;
+  @Column({default:ROLE.CUSTOMER})
+  role: ROLE;
   
   @Column({ nullable: true })
   profileImage: string;

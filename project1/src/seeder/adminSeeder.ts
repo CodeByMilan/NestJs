@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "src/database/entities/user.entity";
+import { ROLE, User } from "src/database/entities/user.entity";
 import { Repository } from "typeorm";
 import * as bcrypt from 'bcrypt';
 
@@ -30,7 +30,7 @@ export class AdminSeederService{
         email: adminEmail,
         password: hashedPassword,
         userName: 'admin',
-        role: 'ADMIN',
+        role: ROLE.ADMIN,
       });
 
       this.logger.log('Admin credentials seeded successfully');

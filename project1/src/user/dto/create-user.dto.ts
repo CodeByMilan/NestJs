@@ -1,4 +1,5 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString} from "class-validator";
+import { ROLE } from "src/database/entities/user.entity";
 
 export class createUserDto{
 
@@ -13,10 +14,10 @@ export class createUserDto{
     @IsString()
     password:string
 
-    @IsEnum(['ADMIN','CUSTOMER'],{
+    @IsEnum(ROLE,{
         message:'Invalid role'
     })
-    role:'ADMIN'|'CUSTOMER'
+    role:ROLE
 
     @IsOptional() 
     @IsString()
