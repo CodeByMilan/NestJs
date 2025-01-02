@@ -6,8 +6,8 @@ export const CloudinaryProvider = {
   useFactory: ()=> {
     return v2.config({
         cloud_name: 'nestjs',
-      api_key: '721886436253255',
-      api_secret: 'a02dbZGM0lLhDze654hELvdA8UE',
+      api_key: process.env.API_KEY,
+      api_secret: process.env.API_SECRET_KEY,
     });
   },
 };

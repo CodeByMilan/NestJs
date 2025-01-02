@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [UserModule, 
@@ -14,9 +13,7 @@ import { MulterModule } from '@nestjs/platform-express';
       }),DatabaseModule,
       MulterModule.register({
         dest: './uploads',
-      })],
-
-  controllers: [AppController],
-  providers: [AppService],
+      }),
+      ProductModule],
 })
 export class AppModule {}
