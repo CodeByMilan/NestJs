@@ -1,4 +1,4 @@
-import { IsDecimal, IsNotEmpty, IsNumber, IsOptional, IsString, Length } from "class-validator";
+import { IsDecimal, IsNotEmpty, IsNumber, IsOptional, IsString, Length, MinLength } from "class-validator";
 
 export class CreateProductDto {
     @IsString()
@@ -8,11 +8,11 @@ export class CreateProductDto {
     @IsDecimal()
     price:number
 
-    @IsString()
-    @Length(10, 500)
     description:string
 
     @IsOptional()
     @IsString()
     productImage?:string
+
+    userId:number
 }

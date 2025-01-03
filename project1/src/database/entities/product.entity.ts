@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import { User } from './user.entity';
+import { OrderDetail } from './orderDetails.entity';
 
 @Entity('products') 
 export class Product {
@@ -11,10 +13,20 @@ export class Product {
   @Column()
   price: number;
 
-  @Column()
+  @Column({nullable:true})
   description:string
 
   @Column({ nullable: true })
   productImage: string;
+
+  @Column()
+  userId:number
+
+  @ManyToOne(
+  type => User, (user) => user.products)
+  user: User;
+  @OneToMany(
+    type => OrderDetail, orderDetails => orderDetails.product)
+  orderDetail: OrderDetail[];
  
 }

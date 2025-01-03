@@ -10,14 +10,12 @@ import {
   Query,
   UploadedFile,
   UseGuards,
-  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { createUserDto } from './dto/create-user.dto';
 import { updateUserDto } from './dto/update-user.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { log } from 'console';
+
 import { logInDto } from './dto/login-user.dto';
 import { UserAuthenticationService } from 'src/auth/userAuthentication.service';
 import { AuthGuard } from 'src/auth/authGuard';
@@ -30,17 +28,10 @@ export class UserController {
 
 
     @Post('register')
-    @UseInterceptors(FileInterceptor('image')) 
     async create(@Body(ValidationPipe) user: createUserDto, @UploadedFile() file: Express.Multer.File) {
       try {
-        // console.log("hello",file)
-        if (file) {
-          // console.log("inside file")
-          user.profileImage = file.originalname; 
-        }
-        const image = await this.userService.uploadImage(file);
         const data = this.userService.create(user); 
-        return {data,image};
+        return {data};
       } catch (error) {
         console.log(error);
         throw error;

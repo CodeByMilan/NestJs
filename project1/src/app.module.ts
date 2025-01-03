@@ -4,6 +4,7 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { ProductModule } from './product/product.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [UserModule, 
@@ -14,6 +15,7 @@ import { ProductModule } from './product/product.module';
       MulterModule.register({
         dest: './uploads',
       }),
-      ProductModule],
+      ProductModule,
+      OrderModule],
 })
 export class AppModule {}

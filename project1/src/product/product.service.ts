@@ -1,26 +1,81 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
+import { Readable } from 'stream';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Product } from 'src/database/entities/product.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProductService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  async uploadImage(
+    file: Express.Multer.File,
+  ): Promise<UploadApiResponse | UploadApiErrorResponse> {
+    return new Promise((resolve, reject) => {
+      const upload = v2.uploader.upload_stream((error, result) => {
+        if (error) {
+          console.log('Upload Error:', error);
+          reject(error); // Reject the promise on error
+        } else {
+          console.log('Upload Success:', result);
+          resolve(result); // Resolve the promise on success
+        }
+      });
+      // Pipe the file buffer to the upload stream
+      const bufferStream = Readable.from(file.buffer);
+      bufferStream.pipe(upload);
+    });
+  }
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+  ) {}
+  async create(productDto: CreateProductDto): Promise<Product> {
+    
+    const product = await this.productRepository.create(productDto);
+    const data = await this.productRepository.save(product);
+    return data;
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async findAll(): Promise< Product[] > {
+    const products = await this.productRepository.find();
+
+    if (!products || products.length === 0) {
+      throw new NotFoundException('Products not found');
+    }
+
+    return products
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: number): Promise< Product> {
+    const product = await this.productRepository.findOne({ where: { id } });
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+   return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(
+    id: number,
+    updateProductDto: UpdateProductDto,
+  ): Promise<Product> {
+    const product = await this.productRepository.findOne({ where: { id } });
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    const updatedProductEntity = { ...product, ...updateProductDto };
+    const data = await this.productRepository.save(updatedProductEntity);
+   return data;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async delete(id: number): Promise<number> {
+    const product = await this.productRepository.findOne({ where: { id } });
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+      await this.productRepository.delete(id);
+    return product.id
+    
   }
 }

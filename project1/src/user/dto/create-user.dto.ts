@@ -18,8 +18,4 @@ export class createUserDto{
         message:'Invalid role'
     })
     role:ROLE
-
-    @IsOptional() 
-    @IsString()
-    profileImage?: string;
 }
