@@ -55,16 +55,17 @@ export class ProductController {
   }
 
   @Get()
-  findAll() {
-    const data =this.productService.findAll();
+  async findAll() {
+    const data = await this.productService.findAll();
+    console.log(data)
     return {
       message: 'Products retrieved successfully',
       data,
   }
   }
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    const data =this.productService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const data = await this.productService.findOne(id);
     return {
       message: 'Product retrieved successfully',
       data,
