@@ -26,7 +26,7 @@ export class OrderDetailsController {
     async findOne(@Param('id',ParseIntPipe) id: number) {
     const data = await this.orderDetailsService.findOne(id);
     return {
-      message:'order found successfully',
+      message:'orderDetail found successfully',
       data:data
       }
     }
@@ -36,7 +36,7 @@ export class OrderDetailsController {
     @Body(ValidationPipe) updateOrderDetailDto: updateOrderDetailsDto) {
      const data = await this.orderDetailsService.update(id,updateOrderDetailDto)
      return {
-      message:'order updated successfully',
+      message:'orderDetail updated successfully',
       data:data
       } 
     }
@@ -45,7 +45,7 @@ export class OrderDetailsController {
     async remove(@Param('id' ,ParseIntPipe) id: number) {
       const data =  await this.orderDetailsService.delete(id)
       return {
-        message:'order deleted successfully',
+        message:'orderDetail deleted successfully',
         data:data
         }
     }

@@ -14,12 +14,10 @@ import { OrderDetailsService } from './order/orderDetails/order-details.service'
         isGlobal: true,  
         envFilePath: '.env',  
       }),DatabaseModule,
-      MulterModule.register({
-        dest: './uploads',
-      }),
+      // MulterModule.register({
+      //   dest: './uploads',
+      // }),
       ProductModule,
       OrderModule],
-  controllers: [OrderDetailsController],
-  providers: [OrderDetailsService],
 })
 export class AppModule {}

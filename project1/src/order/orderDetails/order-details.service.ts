@@ -21,7 +21,7 @@ export class OrderDetailsService {
       async findAll(): Promise<OrderDetail[]> {
        const data = await this.orderDetailRepository.find();
        if(!data||data.length===0){
-        throw new NotFoundException('orders not found ');
+        throw new NotFoundException('ordersDetail not found ');
        }
        return data;
       }
@@ -29,7 +29,7 @@ export class OrderDetailsService {
      async  findOne(id: number):Promise<OrderDetail> {
       const data = await this.orderDetailRepository.findOne({where:{id}});
       if(!data){
-        throw new NotFoundException('order not found ');
+        throw new NotFoundException('orderDetail not found ');
         }
         return data;
       }
@@ -37,7 +37,7 @@ export class OrderDetailsService {
       async update(id: number, updateOrderDetailDto: updateOrderDetailsDto): Promise<OrderDetail> {
         const order = await this.orderDetailRepository.findOne({where:{id}});
         if(!order){
-          throw new NotFoundException('order not found ');
+          throw new NotFoundException('orderDetail not found ');
           }
           const data = await this.orderDetailRepository.save({...order,...updateOrderDetailDto});
           return data;
@@ -45,7 +45,7 @@ export class OrderDetailsService {
       async delete(id: number): Promise<number> {
         const order = await this.orderDetailRepository.findOne({ where: { id } });
         if (!order) {
-          throw new NotFoundException('Product not found');
+          throw new NotFoundException('OrderDetail not found');
         }
           await this.orderDetailRepository.delete(id);
         return order.id

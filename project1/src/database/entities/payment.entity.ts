@@ -10,7 +10,7 @@ export class Payment {
   paymentStatus: string;
 
   @Column()
-  paymentMethod: number;
+  paymentMethod: string;
 
   @OneToMany((type) => Order, (order) => order.payment)
   order: Order[];
