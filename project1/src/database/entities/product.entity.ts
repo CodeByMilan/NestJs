@@ -23,7 +23,7 @@ export class Product {
   userId:number
 
   @ManyToOne(
-  type => User, (user) => user.products)
+  type => User, (user) => user.product)
   user: User;
   @OneToMany(
     type => OrderDetail, orderDetails => orderDetails.product)
