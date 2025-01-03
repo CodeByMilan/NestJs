@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, ValidationPipe } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -7,28 +7,47 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
+  @Post("add")
+ async  create(@Body(ValidationPipe) createOrderDto: CreateOrderDto) {
+  const data = await this.orderService.create(createOrderDto);
+  return {
+    message:'order created successfully',
+    data:data
   }
-
+ }
   @Get()
-  findAll() {
-    return this.orderService.findAll();
+  async findAll() {
+   const data = await this.orderService.findAll();
+   return {
+    message:'orders found successfully',
+    data:data
   }
-
+  }
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(+id);
+  async findOne(@Param('id',ParseIntPipe) id: number) {
+  const data = await this.orderService.findOne(id);
+  return {
+    message:'order found successfully',
+    data:data
+    }
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
+  async update(@Param('id',ParseIntPipe) id: number, 
+  @Body(ValidationPipe) updateOrderDto: UpdateOrderDto) {
+   const data = await this.orderService.update(id,updateOrderDto)
+   return {
+    message:'order updated successfully',
+    data:data
+    } 
   }
 
   @Delete(':id')
-  remove(@Param('id' ,ParseIntPipe) id: number) {
-    return this.orderService.delete(id);
+  async remove(@Param('id' ,ParseIntPipe) id: number) {
+    const data =  await this.orderService.delete(id)
+    return {
+      message:'order deleted successfully',
+      data:data
+      }
   }
 }

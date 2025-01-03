@@ -73,11 +73,11 @@ export class ProductController {
 }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateProductDto: UpdateProductDto,
+    @Body(ValidationPipe) updateProductDto: UpdateProductDto,
   ) {
-    const data = this.productService.update(id, updateProductDto);
+    const data = await this.productService.update(id, updateProductDto);
     return {
       message: 'Product updated successfully',
       data,
@@ -85,8 +85,8 @@ export class ProductController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    const data=this.productService.delete(id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    const data= await this.productService.delete(id);
     return {
       message: 'Product deleted successfully',
       data

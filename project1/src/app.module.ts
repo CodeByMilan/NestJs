@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
+import { OrderDetailsController } from './order/orderDetails/order-details.controller';
+import { OrderDetailsService } from './order/orderDetails/order-details.service';
 
 @Module({
   imports: [UserModule, 
@@ -17,5 +19,7 @@ import { OrderModule } from './order/order.module';
       }),
       ProductModule,
       OrderModule],
+  controllers: [OrderDetailsController],
+  providers: [OrderDetailsService],
 })
 export class AppModule {}
