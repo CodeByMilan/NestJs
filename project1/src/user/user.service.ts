@@ -11,6 +11,9 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
+  findById(id: any) {
+    throw new Error('Method not implemented.');
+  }
   async uploadImage(
     file: Express.Multer.File,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
@@ -55,8 +58,9 @@ export class UserService {
 
   async create(userDto:createUserDto): Promise<User> {
     const hashedPassword = await bcrypt.hash(userDto.password, 10); 
-    const user = this.userRepository.create({ ...userDto, password: hashedPassword });
-    return this.userRepository.save(user);
+    const user =  await this.userRepository.create({ ...userDto, password: hashedPassword });
+    const data = await this.userRepository.save(user);
+    return data;
   }
 
   async update(id: number, updatedUser: updateUserDto): Promise<User> {
@@ -65,7 +69,8 @@ export class UserService {
       throw new NotFoundException(`User with id ${id} not found`);
     }
     const updatedUserEntity = { ...user, ...updatedUser };
-    return this.userRepository.save(updatedUserEntity); 
+    const data =await this.userRepository.save(updatedUserEntity); 
+    return data ;
   }
   async delete(id: number): Promise<User> {
     const user = await this.findOne(id);

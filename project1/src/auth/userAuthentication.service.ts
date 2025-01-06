@@ -20,15 +20,15 @@ export class UserAuthenticationService {
       const { email, password } = loginDto;
       const user = await this.userRepository.findOne({ where: { email } });
       if (!user) {
-        throw new UnauthorizedException('Invalid credentials');
+        throw new UnauthorizedException('Invalid username or password');
       }
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
-        throw new UnauthorizedException('Invalid credentials');
+        throw new UnauthorizedException('Invalid  username or password ');
       }
-      const payload = { sub: user.id, email: user.email, role: user.role };
+      const payload = { id: user.id, email: user.email, role: user.role };
       return this.jwtService.sign(payload, {
-        expiresIn: '1h',
+        expiresIn: '365d',
         secret: process.env.JWT_SECRET,
       });
     } catch (error) {

@@ -2,7 +2,6 @@ import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString} from "class-validato
 import { ROLE } from "src/database/entities/user.entity";
 
 export class createUserDto{
-
     @IsString()
     @IsNotEmpty()
     userName:string;
@@ -13,9 +12,9 @@ export class createUserDto{
 
     @IsString()
     password:string
-
+    @IsOptional()
     @IsEnum(ROLE,{
         message:'Invalid role'
-    })
-    role:ROLE
+    },)
+    role?:ROLE
 }

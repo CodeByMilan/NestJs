@@ -45,7 +45,7 @@ export class OrderService {
   async delete(id: number): Promise<number> {
     const order = await this.orderRepository.findOne({ where: { id } });
     if (!order) {
-      throw new NotFoundException('Product not found');
+      throw new NotFoundException('order not found');
     }
       await this.orderRepository.delete(id);
     return order.id

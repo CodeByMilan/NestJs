@@ -7,6 +7,8 @@ import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { OrderDetailsController } from './order/orderDetails/order-details.controller';
 import { OrderDetailsService } from './order/orderDetails/order-details.service';
+import { CartModule } from './cart/cart.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [UserModule, 
@@ -18,6 +20,7 @@ import { OrderDetailsService } from './order/orderDetails/order-details.service'
       //   dest: './uploads',
       // }),
       ProductModule,
-      OrderModule],
+      OrderModule,
+      CartModule],
 })
 export class AppModule {}
