@@ -12,13 +12,13 @@ export class CartService {
     private readonly cartRepository: Repository<Cart>,
     
   ){}
-  async create(createCartDto: CreateCartDto):Promise<Cart>{
+  async addToCart(createCartDto: CreateCartDto):Promise<Cart>{
    const cart =await this.cartRepository.create(createCartDto);
    const data = await this.cartRepository.save(cart);
    return data;
   }
 
-  async findAll(): Promise<Cart[]> {
+  async getCartItem(): Promise<Cart[]> {
     const data = await this.cartRepository.find();
     if(!data||data.length===0){
      throw new NotFoundException('cart not found ');
@@ -34,7 +34,7 @@ export class CartService {
       return data;
     }
 
-    async update(id: number, updateCartDto: UpdateCartDto): Promise<Cart> {
+    async updateCart(id: number, updateCartDto: UpdateCartDto): Promise<Cart> {
       const cart = await this.cartRepository.findOne({where:{id}});
       if(!cart){
         throw new NotFoundException('cart not found ');

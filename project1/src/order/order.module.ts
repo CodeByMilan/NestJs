@@ -9,10 +9,12 @@ import { PaymentService } from './payment/payment.service';
 import { PaymentController } from './payment/payment.controller';
 import { OrderDetailsService } from './orderDetails/order-details.service';
 import { OrderDetailsController } from './orderDetails/order-details.controller';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports:[
     TypeOrmModule.forFeature([OrderDetail,Order,Payment]),
+    JwtModule
   ],
   controllers: [OrderController, PaymentController,OrderDetailsController],
   providers: [OrderService, PaymentService,OrderDetailsService],

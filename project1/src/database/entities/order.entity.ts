@@ -9,19 +9,29 @@ import { User } from './user.entity';
 import { Payment } from './payment.entity';
 import { OrderDetail } from './orderDetails.entity';
 
+export enum ORDERSTATUS {
+  PENDING = 'pending',
+  ONTHEWAY = 'ontheway',
+  DELIVERED = 'delivered',
+  CANCELED = 'canceled',
+}
+
 @Entity('orders')
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  orderStatus: string;
+  @Column({default:ORDERSTATUS.PENDING})
+  orderStatus: ORDERSTATUS;
 
   @Column()
   amount: number;
 
   @Column()
   shippingAddress: string;
+
+  @Column({nullable:false})
+  userId:number
 
   @ManyToOne((type) => User, (user) => user.orders)
   user: User;

@@ -18,13 +18,17 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard, AuthRequest } from 'src/auth/authGuard';
+import { Roles } from 'src/custom/roles.decorator';
+import { RolesGuard } from 'src/auth/rolesGuard';
+import { ROLE } from 'src/database/entities/user.entity';
+import { Public } from 'src/custom/public.decorator';
 
+@UseGuards(AuthGuard,RolesGuard)
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
-
+  @Roles(ROLE.ADMIN)
   @Post('add')
-  @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   async create(
     @Body(ValidationPipe) createProductDto: CreateProductDto,
@@ -60,7 +64,7 @@ export class ProductController {
       throw error;
     }
   }
-
+  @Public()
   @Get()
   async findAll() {
     const data = await this.productService.findAll();
@@ -70,6 +74,7 @@ export class ProductController {
       data,
   }
   }
+@Public()
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const data = await this.productService.findOne(id);
@@ -79,6 +84,7 @@ export class ProductController {
   }
 
 }
+@Roles(ROLE.ADMIN )
 @UseInterceptors(FileInterceptor('image'))
   @Patch(':id')
   async update(
@@ -107,7 +113,7 @@ export class ProductController {
       throw error;
       }
   }
-
+  @Roles(ROLE.ADMIN)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     const data= await this.productService.delete(id);
