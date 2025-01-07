@@ -48,7 +48,7 @@ export class OrderController {
     };
   }
 
-  @Get('customer')
+  @Get('myOrders')
   async fetchMyOrder(@Req()request:AuthRequest) {
     const userId=request.user.id
     try {
@@ -62,13 +62,12 @@ export class OrderController {
       throw error;
     }
   }
-
-  @Patch(':id')
+  @Roles(ROLE.ADMIN)
+  @Patch('updateOrder/:id')
   async updateOder(
     @Param('id', ParseIntPipe) id: number,
     @Body(ValidationPipe) updateOrderDto: UpdateOrderDto,
   ) {
- 
     const data = await this.orderService.updateOrder(id, updateOrderDto);
     return {
       message: 'order updated successfully',

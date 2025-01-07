@@ -12,43 +12,58 @@ export class CartService {
     private readonly cartRepository: Repository<Cart>,
     
   ){}
-  async addToCart(createCartDto: CreateCartDto):Promise<Cart>{
-   const cart =await this.cartRepository.create(createCartDto);
-   const data = await this.cartRepository.save(cart);
-   return data;
+  async addToCart(userId:number,createCartDto:CreateCartDto) {
+    const { quantity, productId } = createCartDto;
+    let cartItem = await this.cartRepository.findOne({
+      where: { userId,productId },
+    });
+    if (cartItem) {
+      cartItem.quantity += quantity;
+    } else {
+      cartItem = this.cartRepository.create({
+        userId,
+        productId,
+        quantity,
+      });
+      const cartData = await this.cartRepository.save(cartItem);
+      console.log("cart:",cartData)
+      return cartData
+    }
   }
+  async getCartItems(userId: number): Promise<Cart[]> {
+    const cartData = await this.cartRepository.find({
+      where: { userId },
+      relations: ['product'],
+    });
 
-  async getCartItem(): Promise<Cart[]> {
-    const data = await this.cartRepository.find();
-    if(!data||data.length===0){
-     throw new NotFoundException('cart not found ');
+    if (cartData.length === 0) {
+      throw new NotFoundException('Cart is empty');
     }
-    return data;
-   }
+    return cartData;
+}
 
-   async  findOne(id: number):Promise<Cart> {
-    const data = await this.cartRepository.findOne({where:{id}});
-    if(!data){
-      throw new NotFoundException('cart not found ');
-      }
-      return data;
-    }
-
-    async updateCart(id: number, updateCartDto: UpdateCartDto): Promise<Cart> {
-      const cart = await this.cartRepository.findOne({where:{id}});
+    async updateCartItem(userId:number,productId: number, updateCartDto: UpdateCartDto): Promise<Cart> {
+      const cart = await this.cartRepository.findOne({where:{
+        productId,
+        userId
+      }});
       if(!cart){
-        throw new NotFoundException('cart not found ');
+        throw new NotFoundException('no productId found for the user');
         }
+
         const data = await this.cartRepository.save({...cart,...updateCartDto});
         return data;
     }
-    async delete(id: number): Promise<number> {
-      const cart = await this.cartRepository.findOne({ where: { id } });
+
+    async deleteCartItem(userId:number,productId: number): Promise<number> {
+      const cart = await this.cartRepository.findOne({ where: {
+        productId ,
+        userId
+      } });
       if (!cart) {
-        throw new NotFoundException('cart not found');
+        throw new NotFoundException('no product in the cart for the user ');
       }
-        await this.cartRepository.delete(id);
-      return cart.id
-      
+      await this.cartRepository.delete(productId);
+      return cart.productId
     }
   }

@@ -37,7 +37,7 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async findAll(role?:ROLE): Promise<User[]> {
+  async getAllUsers(role?:ROLE): Promise<User[]> {
     if (role) {
       const users = await this.userRepository.find({ where: { role } });
       if (users.length === 0) {
@@ -48,7 +48,7 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async findOne(id: number): Promise<User> {
+  async getSingleUser(id: number): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -56,14 +56,14 @@ export class UserService {
     return user;
   }
 
-  async create(userDto:createUserDto): Promise<User> {
+  async registerUser(userDto:createUserDto): Promise<User> {
     const hashedPassword = await bcrypt.hash(userDto.password, 10); 
     const user =  await this.userRepository.create({ ...userDto, password: hashedPassword });
     const data = await this.userRepository.save(user);
     return data;
   }
 
-  async update(id: number, updatedUser: updateUserDto): Promise<User> {
+  async updateUser(id: number, updatedUser: updateUserDto): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } }); 
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -72,8 +72,8 @@ export class UserService {
     const data =await this.userRepository.save(updatedUserEntity); 
     return data ;
   }
-  async delete(id: number): Promise<User> {
-    const user = await this.findOne(id);
+  async deleteUser(id: number): Promise<User> {
+    const user = await this.getSingleUser(id);
     await this.userRepository.delete(id);
     return user;
   }

@@ -1,3 +1,8 @@
+import { IsNotEmpty } from "class-validator"
+
 export class CreateCartDto {
-    quantity:number 
+    @IsNotEmpty()
+    quantity:number
+    @IsNotEmpty()
+    productId:number
 }
