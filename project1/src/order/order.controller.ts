@@ -19,7 +19,6 @@ import { AuthGuard, AuthRequest } from 'src/auth/authGuard';
 import { RolesGuard } from 'src/auth/rolesGuard';
 import { Roles } from 'src/custom/roles.decorator';
 import { ROLE } from 'src/database/entities/user.entity';
-import { request } from 'http';
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(ROLE.CUSTOMER)
 @Controller('order')
@@ -31,13 +30,15 @@ export class OrderController {
     @Req() request: AuthRequest,
   ) {
     const userId=request.user.id;
-    createOrderDto.userId=userId;
-    const data = await this.orderService.createOrder(createOrderDto);
+    const data = await this.orderService.createOrder(userId,createOrderDto);
     return {
       message: 'order created successfully',
       data: data,
     };
   }
+
+
+
   @Roles(ROLE.ADMIN)
   @Get()
   async fetchAllOrders() {

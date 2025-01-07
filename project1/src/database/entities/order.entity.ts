@@ -33,6 +33,9 @@ export class Order {
   @Column({nullable:false})
   userId:number
 
+  @Column({nullable:false})
+  paymentId: number;
+
   @ManyToOne((type) => User, (user) => user.orders)
   user: User;
 

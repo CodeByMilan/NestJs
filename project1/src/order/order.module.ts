@@ -5,10 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrderDetail } from 'src/database/entities/orderDetails.entity';
 import { Order } from 'src/database/entities/order.entity';
 import { Payment } from 'src/database/entities/payment.entity';
-import { PaymentService } from './payment/payment.service';
-import { PaymentController } from './payment/payment.controller';
-import { OrderDetailsService } from './orderDetails/order-details.service';
-import { OrderDetailsController } from './orderDetails/order-details.controller';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
@@ -16,7 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
     TypeOrmModule.forFeature([OrderDetail,Order,Payment]),
     JwtModule
   ],
-  controllers: [OrderController, PaymentController,OrderDetailsController],
-  providers: [OrderService, PaymentService,OrderDetailsService],
+  controllers: [OrderController],
+  providers: [OrderService,],
 })
 export class OrderModule {}

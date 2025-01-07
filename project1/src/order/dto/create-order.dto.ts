@@ -1,17 +1,22 @@
-import { IsDecimal, IsEnum, IsOptional, IsString } from "class-validator";
-import { ORDERSTATUS } from "src/database/entities/order.entity";
+import { IsDecimal, IsString } from "class-validator";
+import { PAYMENTMETHOD, PAYMENTSTATUS } from "src/database/entities/payment.entity";
 
+export interface OrderDetail{
+    quantity:number,
+    productId:number
+}
 export class CreateOrderDto {
-    @IsString()
-    @IsOptional()
-    @IsEnum(ORDERSTATUS,{
-        message:'Invalid order status'
-    },)
-    orderStatus:ORDERSTATUS
+    
     @IsString()
     shippingAddress:string
+
     @IsDecimal()
     amount:number
-    paymentId:number
-    userId:number
+
+    paymentDetails:{
+        paymentMethod:PAYMENTMETHOD,
+        paymentStatus:PAYMENTSTATUS
+    }
+
+    items:OrderDetail[]
 }

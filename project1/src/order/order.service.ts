@@ -4,20 +4,43 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, ORDERSTATUS } from 'src/database/entities/order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Payment } from 'src/database/entities/payment.entity';
+import { OrderDetail } from 'src/database/entities/orderDetails.entity';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
-  ){}
+    @InjectRepository(Payment)
+    private readonly paymentRepository: Repository<Payment>,
+    @InjectRepository(OrderDetail)
+    private readonly orderDetailRepository: Repository<OrderDetail>,
+  ) {}
 
-  async createOrder(createOrderDto: CreateOrderDto) :Promise<Order>{
-  const order = await this.orderRepository.create(createOrderDto);
+  async createOrder(userId:number,createOrderDto: CreateOrderDto) :Promise<Order>{
+    console.log(createOrderDto)
+    const { shippingAddress, amount, paymentDetails, items } =
+      createOrderDto;
+      if(items.length===0){
+        throw new ConflictException("Order must have at least one item")
+      }
+      const payment = await this.paymentRepository.create({
+        paymentMethod: paymentDetails.paymentMethod,
+      });
+     const paymentData= await this.paymentRepository.save(payment)
+      // console.log('paymentid:',payment.id)
+      const order = await this.orderRepository.create({
+        userId,
+        shippingAddress,
+        amount,
+        paymentId: paymentData.id,
+      });
+
   const data = this.orderRepository.save(order);
   return data;
   }
-  
+
   async fetchAllOrders(): Promise<Order[]> {
    const data = await this.orderRepository.find();
    if(!data||data.length===0){
