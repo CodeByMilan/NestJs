@@ -1,4 +1,4 @@
-import { ConflictException, Delete, Injectable, NotFoundException, Req } from '@nestjs/common';
+import { BadRequestException, ConflictException, Delete, Injectable, NotFoundException, Req } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, ORDERSTATUS } from 'src/database/entities/order.entity';
@@ -27,7 +27,7 @@ export class OrderService {
       throw new ConflictException('Order must have at least one item');
     }
     let payment;
-    let approvalLink = '';
+    let approvalLink ;
     const productId=createOrderDto.items[0].productId
     if (paymentDetails.paymentMethod === PAYMENTMETHOD.PAYPAL) {
       approvalLink = await this.paymentService.createOrder(productId,amount);
@@ -39,19 +39,22 @@ export class OrderService {
         paymentMethod: paymentDetails.paymentMethod,
       });
     }
+    // console.log("approveLink",approvalLink)
     const paymentData = await this.paymentRepository.save(payment);
     const order = this.orderRepository.create({
       userId,
       shippingAddress,
       amount,
       paymentId: paymentData.id,
+      paypalOrderId: approvalLink.orderId,
     });
-
+   const payLink =approvalLink.approveLink;
+  //  console.log(payLink)
     const savedOrder = await this.orderRepository.save(order);
-    return {savedOrder,approvalLink};
+    return {savedOrder,payLink};
   }
 
-  async capturePayPalOrder(orderId: number): Promise<any> {
+  async capturePayPalOrder(orderId: string): Promise<any> {
     const captureResult = await this.paymentService.captureOrder(orderId);
     return captureResult.data;
   }
@@ -101,5 +104,44 @@ export class OrderService {
       await this.orderRepository.delete(id);
     return order.id
     
+  }
+  async completeOrder(token: string) {
+    console.log('inside complete order');
+    if (!token) {
+      throw new BadRequestException('PayPal order ID is required');
+    }
+
+    const captureResult = await this.paymentService.captureOrder(token);
+    console.log("capture Result",captureResult)
+    const order = await this.orderRepository.findOne({ where: { paypalOrderId: token } });
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+    const paymentId =order.paymentId
+    const payment = await this.paymentRepository.findOne({where:{id:paymentId}})
+    console.log("payment details",payment)
+    if(!payment){
+      throw new NotFoundException('payment not found');
+      }
+    payment.paymentStatus=captureResult.status
+    await this.paymentRepository.save(payment);
+    return payment;
+  }
+  
+  async cancelOrder(token: string) {
+    if (!token) {
+      throw new BadRequestException('PayPal order ID is required');
+    }
+
+    const order = await this.orderRepository.findOne({ where: { paypalOrderId: token } });
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    // Mark the order as canceled
+    order.orderStatus=ORDERSTATUS.CANCELED;
+    await this.orderRepository.save(order);
+
+    return order;
   }
 }

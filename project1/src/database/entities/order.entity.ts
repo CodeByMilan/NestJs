@@ -36,6 +36,9 @@ export class Order {
   @Column({nullable:false})
   paymentId: number;
 
+  @Column({ nullable: true })
+  paypalOrderId:string
+
   @ManyToOne((type) => User, (user) => user.orders)
   user: User;
 
