@@ -4,8 +4,9 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, ORDERSTATUS } from 'src/database/entities/order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Payment } from 'src/database/entities/payment.entity';
+import { Payment, PAYMENTMETHOD } from 'src/database/entities/payment.entity';
 import { OrderDetail } from 'src/database/entities/orderDetails.entity';
+import { PaymentService } from 'src/payment/paymentService';
 
 @Injectable()
 export class OrderService {
@@ -16,29 +17,43 @@ export class OrderService {
     private readonly paymentRepository: Repository<Payment>,
     @InjectRepository(OrderDetail)
     private readonly orderDetailRepository: Repository<OrderDetail>,
+    private readonly paymentService: PaymentService,
   ) {}
 
-  async createOrder(userId:number,createOrderDto: CreateOrderDto) :Promise<Order>{
-    console.log(createOrderDto)
-    const { shippingAddress, amount, paymentDetails, items } =
-      createOrderDto;
-      if(items.length===0){
-        throw new ConflictException("Order must have at least one item")
-      }
-      const payment = await this.paymentRepository.create({
+  async createOrder(userId: number, createOrderDto: CreateOrderDto): Promise<any> {
+    const { shippingAddress, amount, paymentDetails, items } = createOrderDto;
+
+    if (items.length === 0) {
+      throw new ConflictException('Order must have at least one item');
+    }
+    let payment;
+    let approvalLink = '';
+    const productId=createOrderDto.items[0].productId
+    if (paymentDetails.paymentMethod === PAYMENTMETHOD.PAYPAL) {
+      approvalLink = await this.paymentService.createOrder(productId,amount);
+      payment = this.paymentRepository.create({
         paymentMethod: paymentDetails.paymentMethod,
       });
-     const paymentData= await this.paymentRepository.save(payment)
-      // console.log('paymentid:',payment.id)
-      const order = await this.orderRepository.create({
-        userId,
-        shippingAddress,
-        amount,
-        paymentId: paymentData.id,
+    } else {
+      payment = this.paymentRepository.create({
+        paymentMethod: paymentDetails.paymentMethod,
       });
+    }
+    const paymentData = await this.paymentRepository.save(payment);
+    const order = this.orderRepository.create({
+      userId,
+      shippingAddress,
+      amount,
+      paymentId: paymentData.id,
+    });
 
-  const data = this.orderRepository.save(order);
-  return data;
+    const savedOrder = await this.orderRepository.save(order);
+    return {savedOrder,approvalLink};
+  }
+
+  async capturePayPalOrder(orderId: number): Promise<any> {
+    const captureResult = await this.paymentService.captureOrder(orderId);
+    return captureResult.data;
   }
 
   async fetchAllOrders(): Promise<Order[]> {

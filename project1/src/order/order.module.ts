@@ -6,13 +6,18 @@ import { OrderDetail } from 'src/database/entities/orderDetails.entity';
 import { Order } from 'src/database/entities/order.entity';
 import { Payment } from 'src/database/entities/payment.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { HttpModule } from '@nestjs/axios';
+import { PaymentService } from 'src/payment/paymentService';
+import { ProductService } from 'src/product/product.service';
+import { Product } from 'src/database/entities/product.entity';
 
 @Module({
   imports:[
-    TypeOrmModule.forFeature([OrderDetail,Order,Payment]),
-    JwtModule
+    TypeOrmModule.forFeature([OrderDetail,Order,Payment,Product]),
+    JwtModule,
+    HttpModule,
   ],
   controllers: [OrderController],
-  providers: [OrderService,],
+  providers: [OrderService,PaymentService,ProductService],
 })
 export class OrderModule {}

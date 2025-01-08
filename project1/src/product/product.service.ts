@@ -31,6 +31,8 @@ export class ProductService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
   ) {}
+
+  
   async create(productDto: CreateProductDto): Promise<Product> {
     
     const product = await this.productRepository.create(productDto);
