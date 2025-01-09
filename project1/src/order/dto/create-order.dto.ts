@@ -1,10 +1,13 @@
 import { IsDecimal, IsString } from "class-validator";
 import { PAYMENTMETHOD, PAYMENTSTATUS } from "src/database/entities/payment.entity";
 
-export interface OrderDetail{
+export interface IOrderDetail{
     quantity:number,
-    productId:number
+    productId:number,
+    productName:string,
+    price:number
 }
+
 export class CreateOrderDto {
     
     @IsString()
@@ -18,5 +21,5 @@ export class CreateOrderDto {
         paymentStatus:PAYMENTSTATUS
     }
 
-    items:OrderDetail[]
+    items:IOrderDetail[]
 }

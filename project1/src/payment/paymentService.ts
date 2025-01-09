@@ -55,7 +55,7 @@ export class PaymentService {
     }
   }
 
-  async createOrder(productId: number, amount: number): Promise<any> {
+  async createOrder(productId: number, amount: number,quantity:number): Promise<any> {
     const accessToken = await this.generateAccessToken();
     const url = `${process.env.PAYPAL_BASE_URL}/v2/checkout/orders`;
     const productData = await this.productService.findOne(productId);
@@ -72,14 +72,18 @@ export class PaymentService {
             currency_code: 'USD',
             value: amount,
             breakdown: {
-              item_total: { currency_code: 'USD', value: amount },
+              item_total: { 
+                currency_code: 'USD', 
+                value: amount },
             },
           },
           items: [
             {
               name: productData.productName,
-              quantity: 1,
-              unit_amount: { currency_code: 'USD', value: amount },
+              quantity: quantity,
+              unit_amount: { 
+              currency_code: 'USD',
+              value: amount },
             },
           ],
         },

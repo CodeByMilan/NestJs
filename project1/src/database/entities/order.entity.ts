@@ -8,6 +8,9 @@ import {
 import { User } from './user.entity';
 import { Payment } from './payment.entity';
 import { OrderDetail } from './orderDetails.entity';
+import { json } from 'stream/consumers';
+import { CreateProductDto } from 'src/product/dto/create-product.dto';
+import { IOrderDetail } from 'src/order/dto/create-order.dto';
 
 export enum ORDERSTATUS {
   PENDING = 'pending',
@@ -15,6 +18,7 @@ export enum ORDERSTATUS {
   DELIVERED = 'delivered',
   CANCELED = 'canceled',
 }
+
 
 @Entity('orders')
 export class Order {
@@ -36,8 +40,11 @@ export class Order {
   @Column({nullable:false})
   paymentId: number;
 
-  @Column({ nullable: true })
+  @Column({ default:null ,nullable: true })
   paypalOrderId:string
+
+  @Column({type:'jsonb'})
+  productData:IOrderDetail
 
   @ManyToOne((type) => User, (user) => user.orders)
   user: User;

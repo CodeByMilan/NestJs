@@ -29,8 +29,9 @@ export class OrderService {
     let payment;
     let approvalLink ;
     const productId=createOrderDto.items[0].productId
+    const quantity =createOrderDto.items[0].quantity
     if (paymentDetails.paymentMethod === PAYMENTMETHOD.PAYPAL) {
-      approvalLink = await this.paymentService.createOrder(productId,amount);
+      approvalLink = await this.paymentService.createOrder(productId,amount,quantity);
       payment = this.paymentRepository.create({
         paymentMethod: paymentDetails.paymentMethod,
       });
@@ -46,9 +47,10 @@ export class OrderService {
       shippingAddress,
       amount,
       paymentId: paymentData.id,
-      paypalOrderId: approvalLink.orderId,
+      paypalOrderId: approvalLink?.orderId ,
+      productData:items[0]
     });
-   const payLink =approvalLink.approveLink;
+   const payLink =approvalLink?.approveLink;
   //  console.log(payLink)
     const savedOrder = await this.orderRepository.save(order);
     return {savedOrder,payLink};
@@ -91,6 +93,7 @@ export class OrderService {
       const data = await this.orderRepository.save({...order,...updateOrderDto});
       return data;
   }
+
   async deleteOrder(id: number,
   ): Promise<number> {
     const order = await this.orderRepository.findOne({ where: { id } });
