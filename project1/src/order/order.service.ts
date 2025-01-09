@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 import { Payment, PAYMENTMETHOD } from 'src/database/entities/payment.entity';
 import { OrderDetail } from 'src/database/entities/orderDetails.entity';
 import { PaymentService } from 'src/payment/paymentService';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class OrderService {
@@ -18,7 +20,13 @@ export class OrderService {
     @InjectRepository(OrderDetail)
     private readonly orderDetailRepository: Repository<OrderDetail>,
     private readonly paymentService: PaymentService,
+    @InjectQueue
+    ('audio') private audioQueue: Queue
   ) {}
+
+  async addAudio(name: string) {
+    await this.audioQueue.add('audio',{ name });
+  }
 
   async createOrder(userId: number, createOrderDto: CreateOrderDto): Promise<any> {
     const { shippingAddress, amount, paymentDetails, items } = createOrderDto;
@@ -31,7 +39,7 @@ export class OrderService {
     const productId=createOrderDto.items[0].productId
     const quantity =createOrderDto.items[0].quantity
     if (paymentDetails.paymentMethod === PAYMENTMETHOD.PAYPAL) {
-      approvalLink = await this.paymentService.createOrder(productId,amount,quantity);
+      approvalLink = await this.paymentService.createOrder(productId,amount,quantity,items);
       payment = this.paymentRepository.create({
         paymentMethod: paymentDetails.paymentMethod,
       });
@@ -48,12 +56,12 @@ export class OrderService {
       amount,
       paymentId: paymentData.id,
       paypalOrderId: approvalLink?.orderId ,
-      productData:items[0]
+      productData:items
     });
    const payLink =approvalLink?.approveLink;
   //  console.log(payLink)
-    const savedOrder = await this.orderRepository.save(order);
-    return {savedOrder,payLink};
+    const data = await this.orderRepository.save(order);
+    return {data,payLink};
   }
 
   async capturePayPalOrder(orderId: string): Promise<any> {

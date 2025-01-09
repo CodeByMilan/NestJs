@@ -10,14 +10,17 @@ import { HttpModule } from '@nestjs/axios';
 import { PaymentService } from 'src/payment/paymentService';
 import { ProductService } from 'src/product/product.service';
 import { Product } from 'src/database/entities/product.entity';
+import { QueueModule } from 'src/queue/queueModel';
+import { AudioQueueProcessor } from './queueProcessor';
 
 @Module({
   imports:[
     TypeOrmModule.forFeature([OrderDetail,Order,Payment,Product]),
     JwtModule,
     HttpModule,
+    QueueModule
   ],
   controllers: [OrderController],
-  providers: [OrderService,PaymentService,ProductService],
+  providers: [OrderService,PaymentService,ProductService,AudioQueueProcessor],
 })
 export class OrderModule {}

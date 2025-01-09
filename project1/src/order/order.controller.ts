@@ -31,6 +31,10 @@ export class OrderController {
     private readonly orderService: OrderService,
     private readonly paymentService: PaymentService,
   ) {}
+  @Get()
+  async addAudioJob(@Query('name') name: string) {
+   const data= await this.orderService.addAudio(name);
+  }
   @UseGuards(AuthGuard, RolesGuard)
 @Roles(ROLE.CUSTOMER)
   @Post('add')
@@ -45,7 +49,7 @@ export class OrderController {
     const data = await this.orderService.createOrder(userId, createOrderDto);
     return {
       message: 'order created successfully',
-      data: data,
+      data
     };
   }
   @UseGuards(AuthGuard, RolesGuard)

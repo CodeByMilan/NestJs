@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { IOrderDetail } from 'src/order/dto/create-order.dto';
 import { ProductService } from 'src/product/product.service';
 
 @Injectable()
@@ -55,7 +56,7 @@ export class PaymentService {
     }
   }
 
-  async createOrder(productId: number, amount: number,quantity:number): Promise<any> {
+  async createOrder(productId: number, amount: number,quantity:number,items:IOrderDetail[]): Promise<any> {
     const accessToken = await this.generateAccessToken();
     const url = `${process.env.PAYPAL_BASE_URL}/v2/checkout/orders`;
     const productData = await this.productService.findOne(productId);
@@ -65,27 +66,28 @@ export class PaymentService {
     }
 
     const data = {
-      intent: 'CAPTURE',
+      intent: "CAPTURE",
       purchase_units: [
         {
           amount: {
-            currency_code: 'USD',
+            currency_code: "USD",
             value: amount,
             breakdown: {
-              item_total: { 
-                currency_code: 'USD', 
-                value: amount },
+              item_total: {
+                currency_code: "USD",
+                value:amount,
+              },
             },
           },
-          items: [
-            {
-              name: productData.productName,
-              quantity: quantity,
-              unit_amount: { 
-              currency_code: 'USD',
-              value: amount },
+          items:items.map((item) => ({
+            name: item.productName,
+            unit_amount: {
+              currency_code: "USD",
+              value: item.price.toString(),
             },
-          ],
+            quantity: item.quantity.toString(),
+          })),
+         
         },
       ],
       application_context: {

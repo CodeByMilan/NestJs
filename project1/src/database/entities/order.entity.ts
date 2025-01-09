@@ -44,7 +44,7 @@ export class Order {
   paypalOrderId:string
 
   @Column({type:'jsonb'})
-  productData:IOrderDetail
+  productData:IOrderDetail[]
 
   @ManyToOne((type) => User, (user) => user.orders)
   user: User;
