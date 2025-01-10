@@ -94,9 +94,13 @@ export class OrderService {
       return data;
   }
 
-  async deleteOrder(id: number,
+  async deleteOrder(orderId: number,userId:number
   ): Promise<number> {
-    const order = await this.orderRepository.findOne({ where: { id } });
+    const order = await this.orderRepository.findOne({ where: 
+      { 
+        id:orderId, 
+        userId
+    } });
     const orderStatus = order.orderStatus
     if (!order) {
       throw new NotFoundException('order not found');
@@ -104,43 +108,46 @@ export class OrderService {
     if(orderStatus === ORDERSTATUS.ONTHEWAY){
       throw new ConflictException('you cannot delete this order as it is ontheway');
       }
-      await this.orderRepository.delete(id);
+    await this.orderRepository.delete(orderId);
     return order.id
     
   }
+
+
+
   async completeOrder(token: string) {
     console.log('inside complete order');
+    const paypalOrderId=token
+    console.log("token",token)
     if (!token) {
       throw new BadRequestException('PayPal order ID is required');
     }
-
     try {
       const captureResult = await this.paymentService.captureOrder(token);
       console.log("capture Result", captureResult);
-      const order = await this.orderRepository.findOne({ where: { paypalOrderId: token } });
+      const order = await this.orderRepository.findOne({ where: { paypalOrderId} });
       if (!order) {
         throw new NotFoundException('Order not found');
       }
-
-      // Update payment and order status...
       const paymentId = order.paymentId;
       const payment = await this.paymentRepository.findOne({ where: { id: paymentId } });
       if (!payment) {
         throw new NotFoundException('Payment not found');
       }
-
       payment.paymentStatus = captureResult.status;
       await this.paymentRepository.save(payment);
-
-      // Job completed successfully, return response
-      return payment;
+      return {
+        payment,order
+      }
     } catch (error) {
       console.error('Error in completeOrder:', error.message);
       // If an error occurs, add the job to the queue for retry
-      await this.orderQueueService.addCompleteOrderJob(token);
       throw new InternalServerErrorException('Failed to complete the order');
     }
   }
+
+
+
   async cancelOrder(token: string) {
     if (!token) {
       throw new BadRequestException('PayPal order ID is required');
@@ -150,8 +157,6 @@ export class OrderService {
     if (!order) {
       throw new NotFoundException('Order not found');
     }
-
-    // Mark the order as canceled
     order.orderStatus=ORDERSTATUS.CANCELED;
     await this.orderRepository.save(order);
 

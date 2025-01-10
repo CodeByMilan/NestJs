@@ -6,8 +6,9 @@ import { Queue } from 'bullmq';
 export class OrderQueueService {
   constructor(@InjectQueue('order') private readonly orderQueue: Queue) {}
 
-  async addCompleteOrderJob(orderId: string) {
-    await this.orderQueue.add('completeOrder', { orderId }, {
+  async addCompleteOrderJob(paypalOrderId: string) {
+    console.log("inside aadd complete order job ",paypalOrderId)
+    await this.orderQueue.add('completeOrder', { paypalOrderId }, {
       attempts: 5, 
       backoff: 60000, 
     });

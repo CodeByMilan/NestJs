@@ -87,41 +87,47 @@ export class OrderController {
   }
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(ROLE.CUSTOMER)
-  @Delete(':id')
+  @Delete(':orderId')
   async deleteOrder(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('orderId', ParseIntPipe) orderId: number,
     @Req() request: AuthRequest,
   ) {
     const userId = request.user.id;
-    const order = await this.orderService.fetchOrder(id);
+    const order = await this.orderService.fetchOrder(orderId);
     if (order.userId !== userId) {
       throw new UnauthorizedException(
         'You are not authorized to delete this order',
       );
     }
-    const data = await this.orderService.deleteOrder(id);
+    const data = await this.orderService.deleteOrder(userId,orderId);
     return {
       message: 'order deleted successfully',
       data: data,
     };
   }
+
+
+
   @Public()
   @Get('complete-order')
   async completeOrder(
     @Query('token') token: string,  
   ) {
+    console.log('token',token)
     try {
-      const order = await this.orderService.completeOrder(token);
-
+      const paymentData = await this.orderService.completeOrder(token);
       return {
-        message: 'Order completed successfully',
-        order,
+        message: 'payment completed successfully',
+        paymentData,
       };
     } catch (error) {
       console.error('Error in completeOrder:', error.message);
-      throw new InternalServerErrorException('Failed to complete the order');
+      throw new InternalServerErrorException('Failed to complete the payment');
     }
   }
+
+
+
   @Public()
   @Get('cancel-order')
   async cancelOrder(@Query('token') token: string) {

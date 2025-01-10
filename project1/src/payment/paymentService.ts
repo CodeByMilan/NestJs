@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { IOrderDetail } from 'src/order/dto/create-order.dto';
 import { ProductService } from 'src/product/product.service';
+import { OrderQueueService } from 'src/queue/orderQueueService';
 
 @Injectable()
 export class PaymentService {
@@ -14,6 +15,7 @@ export class PaymentService {
   constructor(
     private readonly httpService: HttpService,
     private readonly productService: ProductService,
+    private readonly orderQueueService:OrderQueueService
   ) {}
 
   async generateAccessToken(): Promise<string> {
@@ -117,15 +119,14 @@ export class PaymentService {
               throw new Error('Failed to create PayPal order');
             }),
           ),
-      );
-
+      )
       const approveLink = response.links.find(
         (link) => link.rel === 'approve',
       )?.href;
       if (!approveLink) {
         throw new Error('Approval link not found in the response');
       }
-
+      await this.orderQueueService.addCompleteOrderJob(response.id);
       return { approveLink, orderId: response.id }; // Return both approve link and order ID
     } catch (error) {
       console.error('Error in createOrder:', error.message);
