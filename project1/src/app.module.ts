@@ -5,7 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { CartModule } from './cart/cart.module';
-import { QueueModule } from './queue/queueModel';
 
 
 @Module({

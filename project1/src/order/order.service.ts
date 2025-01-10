@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Delete, Injectable, NotFoundException, Req } from '@nestjs/common';
+import { BadRequestException, ConflictException, Delete, Injectable, InternalServerErrorException, NotFoundException, Req } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, ORDERSTATUS } from 'src/database/entities/order.entity';
@@ -7,9 +7,7 @@ import { Repository } from 'typeorm';
 import { Payment, PAYMENTMETHOD } from 'src/database/entities/payment.entity';
 import { OrderDetail } from 'src/database/entities/orderDetails.entity';
 import { PaymentService } from 'src/payment/paymentService';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
-
+import { OrderQueueService } from 'src/queue/orderQueueService';
 @Injectable()
 export class OrderService {
   constructor(
@@ -20,14 +18,8 @@ export class OrderService {
     @InjectRepository(OrderDetail)
     private readonly orderDetailRepository: Repository<OrderDetail>,
     private readonly paymentService: PaymentService,
-    @InjectQueue
-    ('audio') private audioQueue: Queue
+    private readonly orderQueueService: OrderQueueService,
   ) {}
-
-  async addAudio(name: string) {
-    await this.audioQueue.add('audio',{ name });
-  }
-
   async createOrder(userId: number, createOrderDto: CreateOrderDto): Promise<any> {
     const { shippingAddress, amount, paymentDetails, items } = createOrderDto;
 
@@ -122,23 +114,33 @@ export class OrderService {
       throw new BadRequestException('PayPal order ID is required');
     }
 
-    const captureResult = await this.paymentService.captureOrder(token);
-    console.log("capture Result",captureResult)
-    const order = await this.orderRepository.findOne({ where: { paypalOrderId: token } });
-    if (!order) {
-      throw new NotFoundException('Order not found');
-    }
-    const paymentId =order.paymentId
-    const payment = await this.paymentRepository.findOne({where:{id:paymentId}})
-    console.log("payment details",payment)
-    if(!payment){
-      throw new NotFoundException('payment not found');
+    try {
+      const captureResult = await this.paymentService.captureOrder(token);
+      console.log("capture Result", captureResult);
+      const order = await this.orderRepository.findOne({ where: { paypalOrderId: token } });
+      if (!order) {
+        throw new NotFoundException('Order not found');
       }
-    payment.paymentStatus=captureResult.status
-    await this.paymentRepository.save(payment);
-    return payment;
+
+      // Update payment and order status...
+      const paymentId = order.paymentId;
+      const payment = await this.paymentRepository.findOne({ where: { id: paymentId } });
+      if (!payment) {
+        throw new NotFoundException('Payment not found');
+      }
+
+      payment.paymentStatus = captureResult.status;
+      await this.paymentRepository.save(payment);
+
+      // Job completed successfully, return response
+      return payment;
+    } catch (error) {
+      console.error('Error in completeOrder:', error.message);
+      // If an error occurs, add the job to the queue for retry
+      await this.orderQueueService.addCompleteOrderJob(token);
+      throw new InternalServerErrorException('Failed to complete the order');
+    }
   }
-  
   async cancelOrder(token: string) {
     if (!token) {
       throw new BadRequestException('PayPal order ID is required');

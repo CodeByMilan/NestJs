@@ -23,19 +23,13 @@ import { RolesGuard } from 'src/auth/rolesGuard';
 import { Roles } from 'src/custom/roles.decorator';
 import { ROLE } from 'src/database/entities/user.entity';
 import { Public } from 'src/custom/public.decorator';
-import { PaymentService } from 'src/payment/paymentService';
 
 @Controller('order')
 export class OrderController {
   constructor(
     private readonly orderService: OrderService,
-    private readonly paymentService: PaymentService,
   ) {}
-  @Get()
-  async addAudioJob(@Query('name') name: string) {
-   const data= await this.orderService.addAudio(name);
-  }
-  @UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @Roles(ROLE.CUSTOMER)
   @Post('add')
   async createOrder(
