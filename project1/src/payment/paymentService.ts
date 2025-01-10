@@ -126,6 +126,7 @@ export class PaymentService {
       if (!approveLink) {
         throw new Error('Approval link not found in the response');
       }
+  
       await this.orderQueueService.addCompleteOrderJob(response.id);
       return { approveLink, orderId: response.id }; // Return both approve link and order ID
     } catch (error) {
@@ -167,7 +168,7 @@ export class PaymentService {
 
       const { status, links, payer } = response;
       const result = {
-        status, // Status of the order
+        status, 
         link: links.find((link) => link.rel === 'self')?.href, // Link to the order details
         payerId: payer.payer_id, // Payer ID from the response
       };

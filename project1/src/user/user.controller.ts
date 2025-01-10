@@ -24,6 +24,8 @@ import { ROLE } from 'src/database/entities/user.entity';
 import { RolesGuard } from 'src/auth/rolesGuard';
 import { Roles } from 'src/custom/roles.decorator';
 import { Public } from 'src/custom/public.decorator';
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('user')
 @Controller('user')
 @UseGuards(AuthGuard, RolesGuard)
 export class UserController {

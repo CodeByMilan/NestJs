@@ -4,7 +4,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, ORDERSTATUS } from 'src/database/entities/order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Payment, PAYMENTMETHOD } from 'src/database/entities/payment.entity';
+import { Payment, PAYMENTMETHOD, PAYMENTSTATUS } from 'src/database/entities/payment.entity';
 import { OrderDetail } from 'src/database/entities/orderDetails.entity';
 import { PaymentService } from 'src/payment/paymentService';
 import { OrderQueueService } from 'src/queue/orderQueueService';
@@ -18,7 +18,6 @@ export class OrderService {
     @InjectRepository(OrderDetail)
     private readonly orderDetailRepository: Repository<OrderDetail>,
     private readonly paymentService: PaymentService,
-    private readonly orderQueueService: OrderQueueService,
   ) {}
   async createOrder(userId: number, createOrderDto: CreateOrderDto): Promise<any> {
     const { shippingAddress, amount, paymentDetails, items } = createOrderDto;
@@ -113,10 +112,7 @@ export class OrderService {
     
   }
 
-
-
   async completeOrder(token: string) {
-    console.log('inside complete order');
     const paypalOrderId=token
     console.log("token",token)
     if (!token) {
@@ -141,25 +137,32 @@ export class OrderService {
       }
     } catch (error) {
       console.error('Error in completeOrder:', error.message);
-      // If an error occurs, add the job to the queue for retry
       throw new InternalServerErrorException('Failed to complete the order');
     }
   }
-
-
 
   async cancelOrder(token: string) {
     if (!token) {
       throw new BadRequestException('PayPal order ID is required');
     }
-
     const order = await this.orderRepository.findOne({ where: { paypalOrderId: token } });
     if (!order) {
       throw new NotFoundException('Order not found');
     }
-    order.orderStatus=ORDERSTATUS.CANCELED;
-    await this.orderRepository.save(order);
-
-    return order;
+    const paymentId = order.paymentId;
+    const payment = await this.paymentRepository.findOne({ where: { id: paymentId } });
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+    payment.paymentStatus = PAYMENTSTATUS.FAILED
+    await this.paymentRepository.save(payment);
+    return {
+      payment,
+      order
+    }
+  } catch (error) {
+    console.error('Error in completeOrder:', error.message);
+    throw new InternalServerErrorException('Failed to complete the order');
   }
 }
+

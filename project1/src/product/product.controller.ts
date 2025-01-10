@@ -22,6 +22,7 @@ import { Roles } from 'src/custom/roles.decorator';
 import { RolesGuard } from 'src/auth/rolesGuard';
 import { ROLE } from 'src/database/entities/user.entity';
 import { Public } from 'src/custom/public.decorator';
+import { ApiConsumes } from '@nestjs/swagger';
 
 @UseGuards(AuthGuard,RolesGuard)
 @Controller('product')
@@ -29,7 +30,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
   @Roles(ROLE.ADMIN)
   @Post('add')
-  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
   async create(
     @Body(ValidationPipe) createProductDto: CreateProductDto,
     @UploadedFile() file: Express.Multer.File,

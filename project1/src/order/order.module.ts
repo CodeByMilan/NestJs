@@ -11,6 +11,7 @@ import { PaymentService } from 'src/payment/paymentService';
 import { ProductService } from 'src/product/product.service';
 import { Product } from 'src/database/entities/product.entity';
 import { QueueModule } from 'src/queue/queueModule';
+import { OrderQueueProcessor } from 'src/queue/orderQueueProcessor';
 
 @Module({
   imports:[
@@ -20,7 +21,7 @@ import { QueueModule } from 'src/queue/queueModule';
     forwardRef(() => QueueModule),
   ],
   controllers: [OrderController],
-  providers: [OrderService,PaymentService,ProductService],
+  providers: [OrderService,PaymentService,ProductService,OrderQueueProcessor],
   exports:[OrderService]
 })
 export class OrderModule {}
