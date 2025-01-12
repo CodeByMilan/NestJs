@@ -1,8 +1,11 @@
-import { applyDecorators } from "@nestjs/common";
-import { Transform } from "class-transformer";
+import { applyDecorators } from '@nestjs/common';
+import { Transform } from 'class-transformer';
+import { IsPositive, IsOptional } from 'class-validator';
 
 export const CustomDecimalParser = (): PropertyDecorator => {
   return applyDecorators(
+    
+    // Transform decorator to parse the value
     Transform(({ value }) => {
       if (typeof value === 'string') {
         const decimalValue = parseFloat(value);
@@ -12,5 +15,9 @@ export const CustomDecimalParser = (): PropertyDecorator => {
       }
       return null; 
     }),
+    
+ 
+    IsPositive(),   
+    IsOptional()    
   );
 };

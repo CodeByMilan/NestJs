@@ -11,7 +11,8 @@ async function bootstrap() {
    .setDescription('API documentation for e-commerce')
    .setVersion('1.0')
    .addTag('E-commerce')
-   .build();
+   .build()
+   .addBearerToken();
    //generate swagger document
    const documentFactory = () => SwaggerModule.createDocument(app, config);
    SwaggerModule.setup('ecommerce/api', app, documentFactory);
