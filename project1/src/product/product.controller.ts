@@ -38,7 +38,6 @@ export class ProductController {
     @UploadedFile() file: Express.Multer.File,
     @Req() request:AuthRequest,
   ) {
-    console.log('hello',request.user)
     try {
       let fileName;
       if (file) {
@@ -71,7 +70,7 @@ export class ProductController {
   @Get()
   async findAll(@Query() paginationDto:PaginationDto) {
     const data = await this.productService.findAll(paginationDto);
-    console.log(data)
+    // console.log(data)
     return {
       message: 'Products retrieved successfully',
       data,

@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/database/entities/product.entity';
 import { Repository } from 'typeorm';
 import { PaginationDto } from './dto/pagination.dto';
-import { DEFAULT_PAGE_SIZE } from 'src/utils/constant';
+import { DEFAULT_PAGE_SIZE } from 'src/constants/constant';
 
 @Injectable()
 export class ProductService {
@@ -45,7 +45,7 @@ export class ProductService {
   async findAll(paginationDto:PaginationDto): Promise< Product[] > {
     const products = await this.productRepository.find({
       skip:paginationDto.skip,
-      take:paginationDto.limit ??DEFAULT_PAGE_SIZE
+      take:paginationDto.limit ?? DEFAULT_PAGE_SIZE
     });
     // console.log(products)
 
