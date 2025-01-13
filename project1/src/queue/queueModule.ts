@@ -1,17 +1,16 @@
 import { BullModule } from '@nestjs/bull';
 import { forwardRef, Module } from '@nestjs/common';
 import { OrderQueueService } from './orderQueueService';
-import { OrderQueueProcessor } from './orderQueueProcessor';
 import { OrderModule } from 'src/order/order.module';
 import { QUEUE_NAMES } from './queueTypes';
+
 
 @Module({
   imports: [
   BullModule.forRoot({
     redis: {
-      host: 'localhost',
-      port: 6379,
-    
+      host: process.env.REDIS_HOST,
+      port: parseInt(process.env.REDIS_PORT)||6379,
     },
   }),
     BullModule.registerQueue({
