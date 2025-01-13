@@ -12,6 +12,7 @@ import {
   ParseIntPipe,
   Req,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -23,6 +24,7 @@ import { RolesGuard } from 'src/auth/rolesGuard';
 import { ROLE } from 'src/database/entities/user.entity';
 import { Public } from 'src/custom/public.decorator';
 import { ApiConsumes } from '@nestjs/swagger';
+import {  PaginationDto } from './dto/pagination.dto';
 
 @UseGuards(AuthGuard,RolesGuard)
 @Controller('product')
@@ -67,8 +69,8 @@ export class ProductController {
   }
   @Public()
   @Get()
-  async findAll() {
-    const data = await this.productService.findAll();
+  async findAll(@Query() paginationDto:PaginationDto) {
+    const data = await this.productService.findAll(paginationDto);
     console.log(data)
     return {
       message: 'Products retrieved successfully',

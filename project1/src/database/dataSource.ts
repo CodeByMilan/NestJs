@@ -1,26 +1,17 @@
-import 'reflect-metadata';
+import 'dotenv/config';
+import { join } from 'path';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { ConfigService } from '@nestjs/config';
 
-// Initialize the DataSource instance
-const AppDataSource = (configService: ConfigService) => new DataSource({
+const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  host: configService.get<string>('DB_HOST'),
-  port: configService.get<number>('DB_PORT', 5432),
-  username: configService.get<string>('DB_USERNAME'),
-  password: configService.get<string>('DB_PASSWORD'),
-  database: configService.get<string>('DB_NAME'),
-  synchronize: false,
-  dropSchema: false,
-  keepConnectionAlive: true,
-  entities: [__dirname + '/entities/**/*.entity{.ts,.js}'],
-  migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
-  cli: {
-    entitiesDir: 'src',
-    migrationsDir: 'src/database/migrations',
-    subscribersDir: 'src/database/subscriber',
-  },
-} as DataSourceOptions);
+  host: String(process.env.DATABASE_HOST),
+  port: Number(process.env.DATABASE_PORT),
+  username: String(process.env.DATABASE_USERNAME),
+  password: String(process.env.DATABASE_PASSWORD),
+  database: String(process.env.DATABASE_NAME),
+  entities: [join(__dirname, '../src/**/entities/', '*.entity.{ts,js}')],
+  migrations: [join(__dirname, './migrations', '*.{ts,js}')],
+  migrationsTableName: 'typeorm_migrations',
+};
 
-
-export const dataSourceInstance = AppDataSource; 
+export default new DataSource(dataSourceOptions);
