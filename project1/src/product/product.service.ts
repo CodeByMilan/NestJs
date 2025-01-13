@@ -45,6 +45,11 @@ export class ProductService {
   }
 
   async findAll(paginationDto: PaginationDto): Promise<Product[]> {
+
+    const {skipPagination}=paginationDto
+    if(skipPagination){
+      return await this.productRepository.find()
+    }
     const cachedData: Product[] = await this.cacheManager.get('cachedProducts');
     if (cachedData) {
       console.log('data retrieve from the cache');

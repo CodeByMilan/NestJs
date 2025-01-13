@@ -25,6 +25,7 @@ import { ROLE } from 'src/database/entities/user.entity';
 import { Public } from 'src/custom/public.decorator';
 import { ApiConsumes } from '@nestjs/swagger';
 import {  PaginationDto } from './dto/pagination.dto';
+import { TransformInterceptor } from 'src/interceptors/responseInterceptor';
 
 @UseGuards(AuthGuard,RolesGuard)
 @Controller('product')
@@ -38,6 +39,8 @@ export class ProductController {
     @UploadedFile() file: Express.Multer.File,
     @Req() request:AuthRequest,
   ) {
+
+    console.log("productName",createProductDto.productName)
     try {
       let fileName;
       if (file) {
@@ -67,22 +70,25 @@ export class ProductController {
     }
   }
   @Public()
+  @UseInterceptors(TransformInterceptor)
   @Get()
   async findAll(@Query() paginationDto:PaginationDto) {
     const data = await this.productService.findAll(paginationDto);
     // console.log(data)
     return {
       message: 'Products retrieved successfully',
-      data,
+      ProductData:data,
   }
   }
 @Public()
+@UseInterceptors(TransformInterceptor)
   @Get(':id')
+
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const data = await this.productService.findOne(id);
     return {
       message: 'Product retrieved successfully',
-      data,
+      productData:data,
   }
 
 }
