@@ -23,11 +23,12 @@ import { Roles } from 'src/custom/roles.decorator';
 import { RolesGuard } from 'src/auth/rolesGuard';
 import { ROLE } from 'src/database/entities/user.entity';
 import { Public } from 'src/custom/public.decorator';
-import { ApiConsumes } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import {  PaginationDto } from './dto/pagination.dto';
 import { TransformInterceptor } from 'src/interceptors/responseInterceptor';
 
 @UseGuards(AuthGuard,RolesGuard)
+@ApiBearerAuth()
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -70,7 +71,7 @@ export class ProductController {
     }
   }
   @Public()
-  @UseInterceptors(TransformInterceptor)
+  // @UseInterceptors(TransformInterceptor)
   @Get()
   async findAll(@Query() paginationDto:PaginationDto) {
     const data = await this.productService.findAll(paginationDto);
@@ -81,7 +82,7 @@ export class ProductController {
   }
   }
 @Public()
-@UseInterceptors(TransformInterceptor)
+// @UseInterceptors(TransformInterceptor)
   @Get(':id')
 
   async findOne(@Param('id', ParseIntPipe) id: number) {

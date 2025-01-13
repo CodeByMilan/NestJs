@@ -23,13 +23,15 @@ import { RolesGuard } from 'src/auth/rolesGuard';
 import { Roles } from 'src/custom/roles.decorator';
 import { ROLE } from 'src/database/entities/user.entity';
 import { Public } from 'src/custom/public.decorator';
-
+import { ApiBearerAuth } from '@nestjs/swagger';
+@ApiBearerAuth()
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('order')
 export class OrderController {
   constructor(
     private readonly orderService: OrderService,
   ) {}
-@UseGuards(AuthGuard, RolesGuard)
+
 @Roles(ROLE.CUSTOMER)
   @Post('add')
   async createOrder(
@@ -43,7 +45,6 @@ export class OrderController {
       data
     };
   }
-  @UseGuards(AuthGuard, RolesGuard)
   @Roles(ROLE.ADMIN)
   @Get()
   async fetchAllOrders() {
@@ -53,7 +54,7 @@ export class OrderController {
       data: data,
     };
   }
-  @UseGuards(AuthGuard, RolesGuard)
+
   @Roles(ROLE.CUSTOMER)
   @Get('myOrders')
   async fetchMyOrder(@Req() request: AuthRequest) {
@@ -69,7 +70,7 @@ export class OrderController {
       throw error;
     }
   }
-  @UseGuards(AuthGuard, RolesGuard)
+
   @Roles(ROLE.ADMIN)
   @Patch('updateOrder/:id')
   async updateOder(
@@ -82,7 +83,8 @@ export class OrderController {
       data: data,
     };
   }
-  @UseGuards(AuthGuard, RolesGuard)
+
+  
   @Roles(ROLE.CUSTOMER)
   @Delete(':orderId')
   async deleteOrder(

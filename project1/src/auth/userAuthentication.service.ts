@@ -18,7 +18,8 @@ export class UserAuthenticationService {
   async login(loginDto: logInDto): Promise<string> {
     try {
       const { email, password } = loginDto;
-      const user = await this.userRepository.findOne({ where: { email } });
+      const user = await this.userRepository.findOne({ where: { email },
+      select : ['password'] });
       if (!user) {
         throw new UnauthorizedException('Invalid username or password');
       }

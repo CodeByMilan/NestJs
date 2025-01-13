@@ -14,24 +14,6 @@ export class UserService {
   findById(id: any) {
     throw new Error('Method not implemented.');
   }
-  async uploadImage(
-    file: Express.Multer.File,
-  ): Promise<UploadApiResponse | UploadApiErrorResponse> {
-    return new Promise((resolve, reject) => {
-      const upload = v2.uploader.upload_stream((error, result) => {
-        if (error) {
-          console.log('Upload Error:', error);
-          reject(error); // Reject the promise on error
-        } else {
-          console.log('Upload Success:', result);
-          resolve(result); // Resolve the promise on success
-        }
-      });
-      // Pipe the file buffer to the upload stream
-      const bufferStream = Readable.from(file.buffer);
-      bufferStream.pipe(upload);
-    });
-  }
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -60,7 +42,11 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(userDto.password, 10); 
     const user =  await this.userRepository.create({ ...userDto, password: hashedPassword });
     const data = await this.userRepository.save(user);
-    return data;
+    console.log("user",data)
+    return{
+      ...data,
+      password: undefined
+    }
   }
 
   async updateUser(id: number, updatedUser: updateUserDto): Promise<User> {

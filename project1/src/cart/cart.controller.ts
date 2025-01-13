@@ -18,6 +18,10 @@ import { AuthGuard, AuthRequest } from 'src/auth/authGuard';
 import { RolesGuard } from 'src/auth/rolesGuard';
 import { Roles } from 'src/custom/roles.decorator';
 import { ROLE } from 'src/database/entities/user.entity';
+import { ApiBearerAuth } from '@nestjs/swagger';
+
+
+@ApiBearerAuth()
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(ROLE.CUSTOMER)
 @Controller('customer/cart')

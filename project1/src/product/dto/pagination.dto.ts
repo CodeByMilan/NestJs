@@ -1,5 +1,5 @@
-import { IsBoolean, IsNumber, IsOptional, IsPositive, Min } from "class-validator"
 
+import { IsBoolean, IsNumber, IsOptional, IsPositive,  Min,  } from "class-validator"
 export class PaginationDto{
     @IsNumber()
     @IsPositive()
@@ -21,4 +21,11 @@ export class PaginationDto{
     @IsBoolean()
     @IsOptional()
     skipPagination:boolean
+
+    @IsOptional()
+    search?: {
+      name?: string;
+      price?: number;
+    }
+    
 }

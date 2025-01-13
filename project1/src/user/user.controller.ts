@@ -24,9 +24,11 @@ import { ROLE } from 'src/database/entities/user.entity';
 import { RolesGuard } from 'src/auth/rolesGuard';
 import { Roles } from 'src/custom/roles.decorator';
 import { Public } from 'src/custom/public.decorator';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Authenticated } from 'src/auth/authenticated';
 @ApiTags('user')
 @Controller('user')
+@Authenticated()
 @UseGuards(AuthGuard, RolesGuard)
 export class UserController {
   constructor(
@@ -41,7 +43,7 @@ export class UserController {
       console.log('hello', data);
       return {
         message: 'User created successfully',
-        data,
+        userData:data,
       };
     } catch (error) {
       console.log(error);
@@ -50,11 +52,12 @@ export class UserController {
   }
   @Roles(ROLE.ADMIN)
   @Get()
-  getAllUsers(@Query('role') role?: ROLE) {
-    const data = this.userService.getAllUsers(role);
+  async getAllUsers(@Query('role') role?: ROLE) {
+    const data = await this.userService.getAllUsers(role);
+    console.log(data)
     return{
       message:"data of all users Fetched successfully",
-      data
+      data 
     }
   }
 
@@ -99,8 +102,8 @@ export class UserController {
   }
 
   //login route
-  @Post('login')
   @Public()
+  @Post('login')
   async login(@Body(ValidationPipe) loginDto: logInDto) {
     try {
       const token = await this.authService.login(loginDto);

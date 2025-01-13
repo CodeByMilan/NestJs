@@ -5,7 +5,7 @@ import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
 import { Readable } from 'stream';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/database/entities/product.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { PaginationDto } from './dto/pagination.dto';
 import { DEFAULT_PAGE_SIZE } from 'src/constants/constant';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -45,31 +45,40 @@ export class ProductService {
   }
 
   async findAll(paginationDto: PaginationDto): Promise<Product[]> {
-
-    const {skipPagination}=paginationDto
-    if(skipPagination){
-      return await this.productRepository.find()
+    const { search, skipPagination, skip, limit } = paginationDto;
+  
+    if (skipPagination) {
+      return await this.productRepository.find();
     }
+  
     const cachedData: Product[] = await this.cacheManager.get('cachedProducts');
-    if (cachedData) {
-      console.log('data retrieve from the cache');
+    if (cachedData && !search) {
+      console.log('Data retrieved from the cache');
       return cachedData;
     }
 
-    //remove an item from the cache
-    // await this.cacheManager.del('cached products')
-    //used to clear all cachedManager
-    // await this.cacheManager.reset();
-    // console.log(products)
+    const where: any = {};
+  
+    if (search?.name) {
+      where.productName = Like(`%${search.name}%`); 
+    }
+    if (search?.price) {
+      where.price = search.price; 
+    }
+  
+    console.log('Where condition:', where);
+  
     const products = await this.productRepository.find({
-      skip: paginationDto.skip,
-      take: paginationDto.limit ?? DEFAULT_PAGE_SIZE,
+      where,
+      skip: skip, 
+      take: limit ?? DEFAULT_PAGE_SIZE,
     });
     await this.cacheManager.set('cachedProducts', products);
+
     if (!products || products.length === 0) {
       throw new NotFoundException('Products not found');
     }
-
+  
     return products;
   }
 
