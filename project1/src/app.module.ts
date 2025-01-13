@@ -6,19 +6,20 @@ import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { CartModule } from './cart/cart.module';
 
-
 @Module({
-  imports: [UserModule, 
-      ConfigModule.forRoot({
-        isGlobal: true,  
-        envFilePath: '.env',  
-      }),DatabaseModule,
-      // MulterModule.register({
-      //   dest: './uploads',
-      // }),
-      ProductModule,
-      OrderModule,
-      CartModule,
-    ],
+  imports: [
+    UserModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    DatabaseModule,
+    // MulterModule.register({
+    //   dest: './uploads',
+    // }),
+    ProductModule,
+    OrderModule,
+    CartModule,
+  ],
 })
 export class AppModule {}

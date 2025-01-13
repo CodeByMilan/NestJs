@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigService, ConfigModule } from '@nestjs/config';
+import { AppDataSource } from './dataSource';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get<string>('DB_HOST'),
@@ -14,13 +16,18 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         ssl: {
-          rejectUnauthorized: true, 
+          rejectUnauthorized: true,
         },
-        // autoLoadEntities: true, 
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true, 
+        // autoLoadEntities:true,
+        entities: [__dirname + '/entities/**/*.entity{.ts,.js}'],
+        synchronize: false,
+        migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+        cli: {
+          entitiesDir: 'src/database/entities',
+
+          subscribersDir: 'subscriber',
+        },
       }),
-      inject: [ConfigService],
     }),
   ],
 })
