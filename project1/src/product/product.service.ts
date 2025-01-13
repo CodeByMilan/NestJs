@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
@@ -8,9 +8,17 @@ import { Product } from 'src/database/entities/product.entity';
 import { Repository } from 'typeorm';
 import { PaginationDto } from './dto/pagination.dto';
 import { DEFAULT_PAGE_SIZE } from 'src/constants/constant';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class ProductService {
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
+  ) {}
   async uploadImage(
     file: Express.Multer.File,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
@@ -29,39 +37,43 @@ export class ProductService {
       bufferStream.pipe(upload);
     });
   }
-  constructor(
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
-  ) {}
 
-  
   async create(productDto: CreateProductDto): Promise<Product> {
-    
     const product = await this.productRepository.create(productDto);
     const data = await this.productRepository.save(product);
     return data;
   }
 
-  async findAll(paginationDto:PaginationDto): Promise< Product[] > {
-    const products = await this.productRepository.find({
-      skip:paginationDto.skip,
-      take:paginationDto.limit ?? DEFAULT_PAGE_SIZE
-    });
-    // console.log(products)
+  async findAll(paginationDto: PaginationDto): Promise<Product[]> {
+    const cachedData: Product[] = await this.cacheManager.get('cachedProducts');
+    if (cachedData) {
+      console.log('data retrieve from the cache');
+      return cachedData;
+    }
 
+    //remove an item from the cache
+    // await this.cacheManager.del('cached products')
+    //used to clear all cachedManager
+    // await this.cacheManager.reset();
+    // console.log(products)
+    const products = await this.productRepository.find({
+      skip: paginationDto.skip,
+      take: paginationDto.limit ?? DEFAULT_PAGE_SIZE,
+    });
+    await this.cacheManager.set('cachedProducts', products);
     if (!products || products.length === 0) {
       throw new NotFoundException('Products not found');
     }
 
-    return products
+    return products;
   }
 
-  async findOne(id: number): Promise< Product> {
+  async findOne(id: number): Promise<Product> {
     const product = await this.productRepository.findOne({ where: { id } });
     if (!product) {
       throw new NotFoundException('Product not found');
     }
-   return product;
+    return product;
   }
 
   async update(
@@ -74,7 +86,7 @@ export class ProductService {
     }
     const updatedProductEntity = { ...product, ...updateProductDto };
     const data = await this.productRepository.save(updatedProductEntity);
-   return data;
+    return data;
   }
 
   async delete(id: number): Promise<number> {
@@ -82,8 +94,7 @@ export class ProductService {
     if (!product) {
       throw new NotFoundException('Product not found');
     }
-      await this.productRepository.delete(id);
-    return product.id
-    
+    await this.productRepository.delete(id);
+    return product.id;
   }
 }

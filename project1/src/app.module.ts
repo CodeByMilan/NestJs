@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { CartModule } from './cart/cart.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -17,6 +18,10 @@ import { CartModule } from './cart/cart.module';
     // MulterModule.register({
     //   dest: './uploads',
     // }),
+    CacheModule.register({
+      isGlobal:true,
+      ttl: 60*1000,
+    }),
     ProductModule,
     OrderModule,
     CartModule,
