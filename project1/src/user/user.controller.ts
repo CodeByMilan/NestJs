@@ -83,7 +83,7 @@ export class UserController {
     const userId = request.user.id;
     let data;
     if (userId === id) {
-      const data =this.userService.updateUser(id, userUpdate);
+     data =this.userService.updateUser(id, userUpdate);
     }
     return {
       message: 'You are not authorized to update this user',

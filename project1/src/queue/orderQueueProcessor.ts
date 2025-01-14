@@ -10,7 +10,6 @@ export class OrderQueueProcessor {
   async completeOrder(job: Job<any>, token?: string): Promise<any> {
   const {paypalOrderId} = job.data;
     try {
-
       await this.orderService.completeOrder(paypalOrderId);
       console.log(`Order ${job.data.orderId} completed successfully`);
     } catch (error) {

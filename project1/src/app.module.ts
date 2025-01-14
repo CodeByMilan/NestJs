@@ -23,7 +23,7 @@ import { config } from 'dotenv';
     // }),
     CacheModule.register({
       isGlobal:true,
-      ttl: 60*1000,
+      ttl: 100*10000,
       store:redisStore
     }),
     ProductModule,

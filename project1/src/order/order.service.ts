@@ -120,7 +120,7 @@ export class OrderService {
     }
     try {
       const captureResult = await this.paymentService.captureOrder(token);
-      console.log("capture Result", captureResult);
+      // console.log("capture Result", captureResult);
       const order = await this.orderRepository.findOne({ where: { paypalOrderId} });
       if (!order) {
         throw new NotFoundException('Order not found');

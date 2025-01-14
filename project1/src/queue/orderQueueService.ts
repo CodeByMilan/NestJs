@@ -11,7 +11,7 @@ export class OrderQueueService {
 
   async addCompleteOrderJob(paypalOrderId: string) {
     await this.orderQueue.add(JOB_NAMES.COMPLETE_ORDER, { paypalOrderId }, {
-      attempts: 5, 
+      attempts: 1, 
       backoff: 60000, 
     });
   }
