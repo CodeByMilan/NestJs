@@ -8,27 +8,29 @@ import { CartModule } from './cart/cart.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { config } from 'dotenv';
+import { NodeMailerService } from './utils/mail/nodeMailer.service';
 
 @Module({
   imports: [
-    UserModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load:[config],
+      load: [config],
     }),
-    DatabaseModule,
     // MulterModule.register({
     //   dest: './uploads',
     // }),
     CacheModule.register({
-      isGlobal:true,
-      ttl: 100*10000,
-      store:redisStore
+      isGlobal: true,
+      ttl: 60 * 1000,
+      store: redisStore,
     }),
+    UserModule,
     ProductModule,
     OrderModule,
     CartModule,
+    DatabaseModule,
   ],
+  providers:[NodeMailerService]
 })
 export class AppModule {}

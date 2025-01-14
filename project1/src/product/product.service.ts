@@ -24,39 +24,40 @@ export class ProductService {
   }
 
   async findAll(paginationDto: PaginationDto): Promise<Product[]> {
-    const { search, skipPagination, skip, limit } = paginationDto;
-    const productData = await this.productRepository.find()
-    const cachedData: Product[] = await this.cacheManager.get('cachedProducts');
+    const { search, skipPagination } = paginationDto;
+    let { skip, limit } = paginationDto;
+    limit = DEFAULT_PAGE_SIZE;
     const where: any = {};
     if (search?.name) {
-      where.productName = Like(`%${search.name}%`); 
+      where.productName = Like(`%${search.name}%`);
     }
     if (search?.price) {
-      where.price = search.price; 
+      where.price = search.price;
     }
-  
+    if (skipPagination) {
+      skip = null;
+      limit = null;
+    }
     console.log('Where condition:', where);
-  
+
     const products = await this.productRepository.find({
       where,
-      skip: skip, 
-      take: limit ?? DEFAULT_PAGE_SIZE,
+      skip: skip,
+      take: limit,
     });
 
-    if(skipPagination && !cachedData)
-      {
-      await this.cacheManager.set('cachedProducts', productData);
-      return productData
-    }else{
-      console.log('Data retrieved from the cache')
-        return cachedData
+    if (!products || products.length === 0) {
+      throw new NotFoundException('Products not found');
     }
-
-    // if (!products || products.length === 0) {
-    //   throw new NotFoundException('Products not found');
-    // }
-  
-    // return products;
+    if (skipPagination) {
+      const cachedData: Product[] =
+        await this.cacheManager.get('cachedProducts');
+      if (cachedData) {
+        return cachedData;
+      }
+      await this.cacheManager.set('cachedProducts', products);
+    }
+    return products;
   }
 
   async findOne(id: number): Promise<Product> {

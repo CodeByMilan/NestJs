@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, Render, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { createUserDto } from './dto/create-user.dto';
@@ -7,6 +7,8 @@ import { ROLE, User } from 'src/database/entities/user.entity';
 import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary'
 import { Readable } from 'stream';
 import * as bcrypt from 'bcrypt';
+import { NodeMailerService } from 'src/utils/mail/nodeMailer.service';
+import { SendMailDto } from 'src/utils/mail/mail.dto';
 
 
 @Injectable()
@@ -14,6 +16,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly nodeMailerService:NodeMailerService
   ) {}
 
   async getAllUsers(role?:ROLE): Promise<User[]> {
@@ -39,11 +42,23 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(userDto.password, 10); 
     const user =  await this.userRepository.create({ ...userDto, password: hashedPassword });
     const data = await this.userRepository.save(user);
-    console.log("user",data)
+    // console.log("user",data)
+    const mailOptions:SendMailDto = {
+      to:[{
+        name:data.userName,
+        address:data.email
+      }],
+      subject:"Welcome to our platform",
+      placeholderReplacement:{
+        userName:data.userName
+      }
+      }
+    const sendMail =await this.nodeMailerService.sendMail(mailOptions);
     return{
       ...data,
       password: undefined
     }
+
   }
 
   async updateUser(id: number, updatedUser: updateUserDto): Promise<User> {

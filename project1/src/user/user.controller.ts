@@ -8,8 +8,9 @@ import {
   Patch,
   Post,
   Query,
+  Render,
   Req,
-  UploadedFile,
+  Res,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
@@ -24,7 +25,7 @@ import { ROLE } from 'src/database/entities/user.entity';
 import { RolesGuard } from 'src/auth/rolesGuard';
 import { Roles } from 'src/custom/roles.decorator';
 import { Public } from 'src/custom/public.decorator';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {  ApiTags } from '@nestjs/swagger';
 import { Authenticated } from 'src/auth/authenticated';
 @ApiTags('user')
 @Controller('user')
@@ -37,10 +38,10 @@ export class UserController {
   ) {}
   @Post('register')
   @Public()
+  @Render('mailTemplate')
   async registerUser(@Body(ValidationPipe) user: createUserDto) {
     try {
       const data = await this.userService.registerUser(user);
-      console.log('hello', data);
       return {
         message: 'User created successfully',
         userData:data,

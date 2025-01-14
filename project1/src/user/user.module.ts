@@ -9,6 +9,8 @@ import { CloudinaryProvider } from 'src/middleware/cloudinary.provider';
 import { UserAuthenticationService } from 'src/auth/userAuthentication.service';
 import { JwtModule } from '@nestjs/jwt';
 import { AdminSeederService } from 'src/seeder/adminSeeder';
+import { NodeMailerService } from 'src/utils/mail/nodeMailer.service';
+
 
 @Module({
   imports: [
@@ -16,6 +18,6 @@ import { AdminSeederService } from 'src/seeder/adminSeeder';
     JwtModule
   ],
   controllers: [UserController],
-  providers: [CloudinaryProvider, UserService,UserAuthenticationService,AdminSeederService],
+  providers: [CloudinaryProvider, UserService,UserAuthenticationService,AdminSeederService,NodeMailerService],
 })
 export class UserModule {}
