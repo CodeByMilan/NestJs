@@ -1,8 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
-import { Readable } from 'stream';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/database/entities/product.entity';
 import { Like, Repository } from 'typeorm';
@@ -19,25 +17,6 @@ export class ProductService {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
-  async uploadImage(
-    file: Express.Multer.File,
-  ): Promise<UploadApiResponse | UploadApiErrorResponse> {
-    return new Promise((resolve, reject) => {
-      const upload = v2.uploader.upload_stream((error, result) => {
-        if (error) {
-          console.log('Upload Error:', error);
-          reject(error); // Reject the promise on error
-        } else {
-          console.log('Upload Success:', result);
-          resolve(result); // Resolve the promise on success
-        }
-      });
-      // Pipe the file buffer to the upload stream
-      const bufferStream = Readable.from(file.buffer);
-      bufferStream.pipe(upload);
-    });
-  }
-
   async create(productDto: CreateProductDto): Promise<Product> {
     const product = await this.productRepository.create(productDto);
     const data = await this.productRepository.save(product);
