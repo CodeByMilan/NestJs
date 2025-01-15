@@ -3,6 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
+  Inject,
   Param,
   ParseIntPipe,
   Patch,
@@ -28,6 +31,14 @@ import { Public } from 'src/custom/public.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticated } from 'src/auth/authenticated';
 import { VerifyEmailDto } from './dto/verify-email.dto';
+import { TwilioService } from 'src/utils/twilio/twilioService';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import {
+  SmsRetunedDto,
+  SmsSendDto,
+  VerifyOtpDto,
+} from 'src/utils/twilio/smsTypes.dto';
 @ApiTags('user')
 @Controller('user')
 @Authenticated()
@@ -36,6 +47,9 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: UserAuthenticationService,
+    private readonly twilioService: TwilioService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
   @Post('register')
   @Public()
@@ -121,15 +135,38 @@ export class UserController {
   @Public()
   @Get('verify-email')
   async verifyEmail(
-      @Query('token') token?: VerifyEmailDto
+    @Query('token') token?: VerifyEmailDto,
   ): Promise<{ message: string }> {
-      console.log('Token in controller:',token);
-      try {
-          const data = await this.userService.verifyEmailToken(token);
-          return { message: 'Email verified successfully' };
-      } catch (error) {
-          console.error(error);
-          throw error;
-      }
+    console.log('Token in controller:', token);
+    try {
+      const data = await this.userService.verifyEmailToken(token);
+      return { message: 'Email verified successfully' };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+  @Post('send-otp')
+  async sendOtp(
+    @Body() body: SmsSendDto,
+  ): Promise<{ message: string; returnedData: SmsRetunedDto }> {
+    const otp = await this.twilioService.generateOtp(6);
+    const returnedData = await this.twilioService.sendOtp(
+      body.phoneNumber,
+      otp,
+    );
+    return {
+      message: 'OTP sent successfully',
+      returnedData,
+    };
+  }
+
+  // Endpoint to verify OTP
+  @Post('verify-otp')
+  async verifyOtp(@Body() body: VerifyOtpDto): Promise<{ message: string }> {
+    await this.twilioService.verifyOtp(body);
+    return {
+      message: 'OTP verified successfully',
+    };
   }
 }

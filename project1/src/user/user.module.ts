@@ -10,6 +10,7 @@ import { UserAuthenticationService } from 'src/auth/userAuthentication.service';
 import { JwtModule } from '@nestjs/jwt';
 import { AdminSeederService } from 'src/seeder/adminSeeder';
 import { NodeMailerService } from 'src/utils/mail/nodeMailer.service';
+import { TwilioService } from 'src/utils/twilio/twilioService';
 
 
 @Module({
@@ -18,6 +19,6 @@ import { NodeMailerService } from 'src/utils/mail/nodeMailer.service';
     JwtModule
   ],
   controllers: [UserController],
-  providers: [CloudinaryProvider, UserService,UserAuthenticationService,AdminSeederService,NodeMailerService],
+  providers: [CloudinaryProvider, UserService,UserAuthenticationService,AdminSeederService,NodeMailerService,TwilioService],
 })
 export class UserModule {}
