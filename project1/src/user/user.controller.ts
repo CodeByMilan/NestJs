@@ -25,12 +25,13 @@ import { ROLE } from 'src/database/entities/user.entity';
 import { RolesGuard } from 'src/auth/rolesGuard';
 import { Roles } from 'src/custom/roles.decorator';
 import { Public } from 'src/custom/public.decorator';
-import {  ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { Authenticated } from 'src/auth/authenticated';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 @ApiTags('user')
 @Controller('user')
 @Authenticated()
-@UseGuards(AuthGuard, RolesGuard)
+// @UseGuards(AuthGuard, RolesGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -44,7 +45,7 @@ export class UserController {
       const data = await this.userService.registerUser(user);
       return {
         message: 'User created successfully',
-        userData:data,
+        userData: data,
       };
     } catch (error) {
       console.log(error);
@@ -55,16 +56,19 @@ export class UserController {
   @Get()
   async getAllUsers(@Query('role') role?: ROLE) {
     const data = await this.userService.getAllUsers(role);
-    console.log(data)
-    return{
-      message:"data of all users Fetched successfully",
-      data 
-    }
+    console.log(data);
+    return {
+      message: 'data of all users Fetched successfully',
+      data,
+    };
   }
 
   @Roles(ROLE.ADMIN, ROLE.CUSTOMER)
   @Get(':id')
-  getSingleUser(@Param('id', ParseIntPipe) id: number, @Req() request: AuthRequest) {
+  getSingleUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthRequest,
+  ) {
     const userId = request.user.id;
     if (userId === id) {
       return this.userService.getSingleUser(id);
@@ -84,7 +88,7 @@ export class UserController {
     const userId = request.user.id;
     let data;
     if (userId === id) {
-     data =this.userService.updateUser(id, userUpdate);
+      data = this.userService.updateUser(id, userUpdate);
     }
     return {
       message: 'You are not authorized to update this user',
@@ -95,11 +99,11 @@ export class UserController {
   @Roles(ROLE.ADMIN)
   @Delete(':id')
   deleteUser(@Param('id', ParseIntPipe) id: number) {
-    const data =this.userService.deleteUser(id);
+    const data = this.userService.deleteUser(id);
     return {
       message: 'User deleted successfully',
       data,
-      };
+    };
   }
 
   //login route
@@ -113,5 +117,19 @@ export class UserController {
       console.error(error);
       throw error;
     }
+  }
+  @Public()
+  @Get('verify-email')
+  async verifyEmail(
+      @Query('token') token?: VerifyEmailDto
+  ): Promise<{ message: string }> {
+      console.log('Token in controller:',token);
+      try {
+          const data = await this.userService.verifyEmailToken(token);
+          return { message: 'Email verified successfully' };
+      } catch (error) {
+          console.error(error);
+          throw error;
+      }
   }
 }

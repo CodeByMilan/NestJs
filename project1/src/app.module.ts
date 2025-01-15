@@ -22,7 +22,7 @@ import { NodeMailerService } from './utils/mail/nodeMailer.service';
     // }),
     CacheModule.register({
       isGlobal: true,
-      ttl: 60 * 1000,
+      ttl: 1000 * 1000,
       store: redisStore,
     }),
     UserModule,

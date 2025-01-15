@@ -4,12 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Sajha Pasal</title>
-    <link rel="stylesheet" href="/css/mailTemplate.css">
-   
+    <link rel="stylesheet" href="/css/mailTemplate.css">  <!-- External CSS -->
 </head>
 <body>
-    <h1>Welcome <strong>{{userName}}</strong> to Sajha Pasal!</h1>
-    <p>Congratulations on your successful registration!</p>
-    <p>We are thrilled to have you join our community.</p>
+    <header>
+        <h1>Welcome <strong>{{userName}}</strong> to Sajha Pasal!</h1>
+        <p>We're excited to have you as part of our growing community.</p>
+    </header>
+
+    <section>
+        <p>Congratulations on your successful registration! We are thrilled to have you with us.</p>
+        <p>Please verify your email address by clicking the link below:</p>
+        
+        <p>
+            <a href="{{verificationUrl}}">Verify My Email</a>
+        </p>
+        
+        <p>If you did not register with us, please disregard this email.</p>
+    </section>
+
+    <footer>
+        <p>Thank you for being part of Sajha Pasal!</p>
+        <p>The Sajha Pasal Team</p>
+    </footer>
 </body>
 </html>
