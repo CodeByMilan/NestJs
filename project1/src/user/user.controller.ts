@@ -77,6 +77,21 @@ export class UserController {
     };
   }
 
+  @Public()
+  @Get('verify-email')
+  async verifyEmail(
+    @Query('token') token?: string,
+  ): Promise< string > {
+    console.log('Token in controller:', token);
+    try {
+      const message = await this.userService.verifyEmailToken(token);
+      return message ;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   @Roles(ROLE.ADMIN, ROLE.CUSTOMER)
   @Get(':id')
   getSingleUser(
@@ -132,20 +147,7 @@ export class UserController {
       throw error;
     }
   }
-  @Public()
-  @Get('verify-email')
-  async verifyEmail(
-    @Query('token') token?: VerifyEmailDto,
-  ): Promise<{ message: string }> {
-    console.log('Token in controller:', token);
-    try {
-      const data = await this.userService.verifyEmailToken(token);
-      return { message: 'Email verified successfully' };
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
+ 
   @Post('send-otp')
   async sendOtp(
     @Body() body: SmsSendDto,

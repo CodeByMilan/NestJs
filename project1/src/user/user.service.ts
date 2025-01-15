@@ -100,7 +100,7 @@ export class UserService {
     return user;
   }
 
-  async verifyEmailToken(token: VerifyEmailDto): Promise<any> {
+  async verifyEmailToken(token: string): Promise<any> {
     // Check if the token exists in Redis
     const userData: any = await this.cacheManager.get(
       `emailVerification:${token}`,
@@ -108,10 +108,11 @@ export class UserService {
     if (!userData) {
       throw new Error('Invalid or expired token.');
     }
-    const { email } = JSON.parse(userData);
+    const { email} = JSON.parse(userData);
     // Delete the token from Redis
     await this.cacheManager.del(`emailVerification:${token}`);
-    return { message: `${email} verified successfully!` };
+    return {
+       message: `${email} verified successfully!` };
   }
 
   
