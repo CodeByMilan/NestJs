@@ -69,8 +69,7 @@ export class TwilioService{
     }
   
     // Delete OTP after successful verification
-    await this.cacheManager.del(`otp:${otp}`);
-  
+    await this.cacheManager.del(`OTP`);
     return true;
   }
 }

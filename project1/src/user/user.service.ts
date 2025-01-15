@@ -113,4 +113,6 @@ export class UserService {
     await this.cacheManager.del(`emailVerification:${token}`);
     return { message: `${email} verified successfully!` };
   }
+
+  
 }
