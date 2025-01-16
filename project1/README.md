@@ -97,3 +97,13 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+
+--Database Migration
+     generating a migration file: pnpm run migration:generate src/database/migrations/migrationname
+     this only generates file if you have any changes in the entity 
+     creating a migration file :pnpm run migration:create src/database/migrations/migrationname
+     this will create a migration file even if you have no changes in the entity and you can write your own migration logic in this file
+
+     migration supports only npm in the script.

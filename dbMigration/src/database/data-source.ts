@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { User } from 'src/entities/user.entity';
-import { DataSource, DataSourceOptions, Migration } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 console.log(
     process.env.DATABASE_HOST
 )
@@ -23,7 +23,7 @@ export const AppDataSource = new DataSource({
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   cli: {
     entitiesDir: 'src',
-    MigrationDrr:'src/database/migrations',
+    MigrationDir:'src/database/migrations',
     subscribersDir: 'subscriber',
   },
   extra: {

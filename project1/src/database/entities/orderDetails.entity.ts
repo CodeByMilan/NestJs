@@ -16,6 +16,12 @@ export class OrderDetail {
   @Column()
   productId: number;
 
+  @Column()
+  hello: number;
+
+  @Column()
+  price: number;
+
   @ManyToOne(() => Order, (order) => order.orderDetail)
   order: Order;
 
