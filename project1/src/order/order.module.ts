@@ -12,16 +12,18 @@ import { ProductService } from 'src/product/product.service';
 import { Product } from 'src/database/entities/product.entity';
 import { QueueModule } from 'src/queue/queueModule';
 import { OrderQueueProcessor } from 'src/queue/orderQueueProcessor';
+import { CustomQueryService } from 'src/customQuery/queryBuilder';
+import { User } from 'src/database/entities/user.entity';
 
 @Module({
   imports:[
-    TypeOrmModule.forFeature([OrderDetail,Order,Payment,Product]),
+    TypeOrmModule.forFeature([OrderDetail,Order,Payment,Product,User]),
     JwtModule,
     HttpModule,
     forwardRef(() => QueueModule),
   ],
   controllers: [OrderController],
-  providers: [OrderService,PaymentService,ProductService,OrderQueueProcessor],
+  providers: [OrderService,PaymentService,ProductService,OrderQueueProcessor,CustomQueryService],
   exports:[OrderService]
 })
 export class OrderModule {}

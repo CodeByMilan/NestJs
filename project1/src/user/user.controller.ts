@@ -42,7 +42,7 @@ import {
 @ApiTags('user')
 @Controller('user')
 @Authenticated()
-// @UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -65,6 +65,13 @@ export class UserController {
       console.log(error);
       throw error;
     }
+  }
+  @Roles(ROLE.ADMIN)
+  @Get('havingOrders')
+  async getUsersHavingOrders()
+  {
+    const users = await this.userService.getUsersWithOrders();
+    return users;
   }
   @Roles(ROLE.ADMIN)
   @Get()
@@ -91,6 +98,8 @@ export class UserController {
       throw error;
     }
   }
+
+
 
   @Roles(ROLE.ADMIN, ROLE.CUSTOMER)
   @Get(':id')
@@ -171,4 +180,9 @@ export class UserController {
       message: 'OTP verified successfully',
     };
   }
+
+
+  
+  
+
 }

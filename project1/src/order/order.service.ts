@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { Payment, PAYMENTMETHOD, PAYMENTSTATUS } from 'src/database/entities/payment.entity';
 import { OrderDetail } from 'src/database/entities/orderDetails.entity';
 import { PaymentService } from 'src/payment/paymentService';
-import { OrderQueueService } from 'src/queue/orderQueueService';
+import { CustomQueryService } from 'src/customQuery/queryBuilder';
 @Injectable()
 export class OrderService {
   constructor(
@@ -16,9 +16,15 @@ export class OrderService {
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
     @InjectRepository(OrderDetail)
-    private readonly orderDetailRepository: Repository<OrderDetail>,
     private readonly paymentService: PaymentService,
+    private readonly customQuery:CustomQueryService
   ) {}
+
+
+  async getOrdersByUserId(userId:number):Promise<Order[]>{
+    return this.customQuery.findOrdersByUserId(userId);
+  }
+
   async createOrder(userId: number, createOrderDto: CreateOrderDto): Promise<any> {
     const { shippingAddress, amount, paymentDetails, items } = createOrderDto;
 

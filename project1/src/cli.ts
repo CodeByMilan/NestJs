@@ -8,10 +8,10 @@ async function bootstrap() {
   });
 
   try {
-    console.log('Starting CLI command...');
+    // console.log('Starting CLI command...');
     const commandService = app.select(CommandModule).get(CommandService);
     await commandService.exec();
-    console.log('CLI command executed successfully.');
+    // console.log('CLI command executed successfully.');
   } catch (error) {
     console.error('Error during CLI command execution:', error);
   } finally {

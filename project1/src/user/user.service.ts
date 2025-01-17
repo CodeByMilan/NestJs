@@ -18,6 +18,8 @@ import { Cache } from 'cache-manager';
 import { v4 as uuidv4 } from 'uuid';
 import { ConfigService } from '@nestjs/config';
 import { VerifyEmailDto } from './dto/verify-email.dto';
+import { CustomQueryService } from '../customQuery/queryBuilder';
+import { Order } from 'src/database/entities/order.entity';
 
 @Injectable()
 export class UserService {
@@ -28,8 +30,14 @@ export class UserService {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
     private readonly configService: ConfigService,
+    private readonly customQuery:CustomQueryService
   ) {}
 
+  async getUsersWithOrders(): Promise<User[]> {
+    return this.customQuery.findUserWithOrders();
+  }
+
+  
   async getAllUsers(role?: ROLE): Promise<User[]> {
     if (role) {
       const users = await this.userRepository.find({ where: { role } });
@@ -114,6 +122,7 @@ export class UserService {
     return {
        message: `${email} verified successfully!` };
   }
+
 
   
 }

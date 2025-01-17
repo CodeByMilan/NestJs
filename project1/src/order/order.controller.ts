@@ -28,21 +28,20 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('order')
 export class OrderController {
-  constructor(
-    private readonly orderService: OrderService,
-  ) {}
+  constructor(private readonly orderService: OrderService) {}
 
-@Roles(ROLE.CUSTOMER)
+  @Roles(ROLE.CUSTOMER)
   @Post('add')
   async createOrder(
     @Body(ValidationPipe) createOrderDto: CreateOrderDto,
     @Req() request: AuthRequest,
   ) {
+    console.log(request);
     const userId = request.user.id;
     const data = await this.orderService.createOrder(userId, createOrderDto);
     return {
       message: 'order created successfully',
-      data
+      data,
     };
   }
   @Roles(ROLE.ADMIN)
@@ -71,6 +70,16 @@ export class OrderController {
     }
   }
 
+  @Roles(ROLE.CUSTOMER)
+  @Get('byUserId/:id')
+  async fetchOrderByUserId(@Param('id') id: number) {
+    const data = await this.orderService.getOrdersByUserId(id);
+    return {
+      message: 'Order fetched successfully',
+      data: data,
+    };
+  }
+
   @Roles(ROLE.ADMIN)
   @Patch('updateOrder/:id')
   async updateOder(
@@ -84,7 +93,6 @@ export class OrderController {
     };
   }
 
-  
   @Roles(ROLE.CUSTOMER)
   @Delete(':orderId')
   async deleteOrder(
@@ -98,21 +106,16 @@ export class OrderController {
         'You are not authorized to delete this order',
       );
     }
-    const data = await this.orderService.deleteOrder(userId,orderId);
+    const data = await this.orderService.deleteOrder(userId, orderId);
     return {
       message: 'order deleted successfully',
       data: data,
     };
   }
 
-
-
   @Public()
   @Get('complete-order')
-  async completeOrder(
-    @Query('token') token: string,  
-  ) {
-
+  async completeOrder(@Query('token') token: string) {
     try {
       const paymentData = await this.orderService.completeOrder(token);
       return {
@@ -124,8 +127,6 @@ export class OrderController {
       throw new InternalServerErrorException('Failed to complete the payment');
     }
   }
-
-
 
   @Public()
   @Get('cancel-order')
