@@ -8,6 +8,7 @@ import {
 import { User } from './user.entity';
 import { OrderDetail } from './orderDetails.entity';
 import { Cart } from './cart.entity';
+import { WishListEntity } from 'src/modules/wishlist/repository/entities/wishlist.entity';
 
 @Entity('products')
 export class Product {
@@ -36,5 +37,8 @@ export class Product {
 
   @OneToMany((type) => Cart, (cart) => cart.product)
   carts: Cart;
+
+  @OneToMany((type) => WishListEntity, (wishList) => wishList.product)
+  wishLists: WishListEntity;
   
 }

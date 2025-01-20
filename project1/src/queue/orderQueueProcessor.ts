@@ -8,12 +8,13 @@ export class OrderQueueProcessor {
   constructor(private readonly orderService: OrderService) {}
   @Process(JOB_NAMES.COMPLETE_ORDER)
   async completeOrder(job: Job<any>, token?: string): Promise<any> {
+    console.log(job)
   const {paypalOrderId} = job.data;
     try {
       await this.orderService.completeOrder(paypalOrderId);
-      console.log(`Order ${job.data.orderId} completed successfully`);
+      console.log(`Order ${job.data.paypalOrderId} completed successfully`);
     } catch (error) {
-      console.error(`Error completing order ${job.data.orderId}:`, error);
+      console.error(`Error completing order ${job.data.paypalOrderId}:`, error);
       throw error;
     }
   }

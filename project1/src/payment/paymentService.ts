@@ -136,6 +136,8 @@ export class PaymentService {
   }
 
   async captureOrder(orderId: string): Promise<any> {
+    console.log('inside captureOrder');
+    console.log('orderid',orderId)
     const accessToken = await this.generateAccessToken();
     const url = `${process.env.PAYPAL_BASE_URL}/v2/checkout/orders/${orderId}/capture`;
 
@@ -164,7 +166,7 @@ export class PaymentService {
           ),
       );
 
-      // console.log("inside capture", response);
+      console.log("inside capture", response);
 
       const { status, links, payer } = response;
       const result = {

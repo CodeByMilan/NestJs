@@ -46,7 +46,7 @@ export class AuthGuard implements CanActivate {
       const payload = await this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
-      console.log("payload:",payload)
+      // console.log("payload:",payload)
 
       if (!payload.role) {
         throw new UnauthorizedException('Invalid token: Role missing');

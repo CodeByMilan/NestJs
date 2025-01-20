@@ -16,11 +16,11 @@ export class UserAuthenticationService {
   //login
   async login(loginDto: logInDto): Promise<string> {
     try {
-      console.log("data",loginDto)
+      // console.log("data",loginDto)
       const { email, password } = loginDto;
       const user = await this.userRepository.findOne({ where: { email },
       select : ['password','email','id','role','userName'] });
-      console.log('user',user)
+      // console.log('user',user)
       if (!user) {
         throw new UnauthorizedException('Invalid username or password');
       }
@@ -29,7 +29,7 @@ export class UserAuthenticationService {
         throw new UnauthorizedException('Invalid  username or password ');
       }
       const payload = { id: user.id, userName:user.userName, email: user.email, role: user.role };
-      console.log('payload',payload)
+      // console.log('payload',payload)
       const token =this.jwtService.sign(payload, {
         expiresIn: '365d',
         secret: process.env.JWT_SECRET,

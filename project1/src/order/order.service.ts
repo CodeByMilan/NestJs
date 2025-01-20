@@ -15,7 +15,6 @@ export class OrderService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
-    @InjectRepository(OrderDetail)
     private readonly paymentService: PaymentService,
     private readonly customQuery:CustomQueryService
   ) {}
@@ -25,7 +24,7 @@ export class OrderService {
     return this.customQuery.findOrdersByUserId(userId);
   }
 
-  async createOrder(userId: number, createOrderDto: CreateOrderDto): Promise<any> {
+  async createNewOrder(userId: number, createOrderDto: CreateOrderDto): Promise<any> {
     const { shippingAddress, amount, paymentDetails, items } = createOrderDto;
 
     if (items.length === 0) {
@@ -35,6 +34,7 @@ export class OrderService {
     let approvalLink ;
     const productId=createOrderDto.items[0].productId
     const quantity =createOrderDto.items[0].quantity
+    try{
     if (paymentDetails.paymentMethod === PAYMENTMETHOD.PAYPAL) {
       approvalLink = await this.paymentService.createOrder(productId,amount,quantity,items);
       payment = this.paymentRepository.create({
@@ -60,11 +60,14 @@ export class OrderService {
     const data = await this.orderRepository.save(order);
     return {data,payLink};
   }
-
-  async capturePayPalOrder(orderId: string): Promise<any> {
-    const captureResult = await this.paymentService.captureOrder(orderId);
-    return captureResult.data;
-  }
+  catch(error){
+    throw new ConflictException(error.message);
+    }
+}
+  // async capturePayPalOrder(orderId: string): Promise<any> {
+  //   const captureResult = await this.paymentService.captureOrder(orderId);
+  //   return captureResult.data;
+  // }
 
   async fetchAllOrders(): Promise<Order[]> {
    const data = await this.orderRepository.find();
@@ -126,6 +129,7 @@ export class OrderService {
     }
     try {
       const captureResult = await this.paymentService.captureOrder(token);
+    
       // console.log("capture Result", captureResult);
       const order = await this.orderRepository.findOne({ where: { paypalOrderId} });
       if (!order) {

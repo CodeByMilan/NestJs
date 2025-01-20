@@ -36,9 +36,8 @@ export class OrderController {
     @Body(ValidationPipe) createOrderDto: CreateOrderDto,
     @Req() request: AuthRequest,
   ) {
-    console.log(request);
     const userId = request.user.id;
-    const data = await this.orderService.createOrder(userId, createOrderDto);
+    const data = await this.orderService.createNewOrder(userId, createOrderDto);
     return {
       message: 'order created successfully',
       data,
@@ -117,6 +116,7 @@ export class OrderController {
   @Get('complete-order')
   async completeOrder(@Query('token') token: string) {
     try {
+      console.log('hello') 
       const paymentData = await this.orderService.completeOrder(token);
       return {
         message: 'payment completed successfully',

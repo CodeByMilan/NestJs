@@ -9,7 +9,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { config } from 'dotenv';
 import { NodeMailerService } from './utils/mail/nodeMailer.service';
-import { CustomQueryService } from './customQuery/queryBuilder';
+import { WishListModule } from './modules/wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -31,6 +31,7 @@ import { CustomQueryService } from './customQuery/queryBuilder';
     OrderModule,
     CartModule,
     DatabaseModule,
+    WishListModule
   ],
   providers:[NodeMailerService]
 })

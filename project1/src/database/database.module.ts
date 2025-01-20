@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { WishListEntity } from 'src/modules/wishlist/repository/entities/wishlist.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           rejectUnauthorized: true,
         },
         // autoLoadEntities:true,
-        entities: [__dirname + '/entities/**/*.entity{.ts,.js}'],
+        entities: [__dirname + '/entities/**/*.entity{.ts,.js}',WishListEntity],
         synchronize: false,
         migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
         cli: {

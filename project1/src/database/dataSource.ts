@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { WishListEntity } from 'src/modules/wishlist/repository/entities/wishlist.entity';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
 export const AppDataSource = new DataSource({
@@ -15,7 +16,7 @@ export const AppDataSource = new DataSource({
   dropSchema: false,
   keepConnectionAlive: true,
   logging: process.env.DB_LOGGING === 'true',
-  entities: [__dirname + '/entities/*.{js,ts}'],
+  entities: [__dirname + '/entities/*.{js,ts}',WishListEntity],
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   cli: {
     entitiesDir: 'src',

@@ -17,9 +17,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { v4 as uuidv4 } from 'uuid';
 import { ConfigService } from '@nestjs/config';
-import { VerifyEmailDto } from './dto/verify-email.dto';
 import { CustomQueryService } from '../customQuery/queryBuilder';
-import { Order } from 'src/database/entities/order.entity';
 
 @Injectable()
 export class UserService {
