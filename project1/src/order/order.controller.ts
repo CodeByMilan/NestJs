@@ -116,7 +116,7 @@ export class OrderController {
   @Get('complete-order')
   async completeOrder(@Query('token') token: string) {
     try {
-      console.log('hello') 
+      console.log('hello');
       const paymentData = await this.orderService.completeOrder(token);
       return {
         message: 'payment completed successfully',
@@ -140,6 +140,22 @@ export class OrderController {
     } catch (error) {
       console.error('Error in cancelOrder:', error.message);
       throw new InternalServerErrorException('Failed to cancel the order');
+    }
+  }
+
+  @Public()
+  @Get('stripe/success')
+  async stripeSuccess(@Query('session_id') sessionId: string) {
+    console.log("hello")
+    try {
+      const paymentData = await this.orderService.completeStripeSuccess(sessionId);
+      return {
+        message: 'payment completed successfully',
+        paymentData,
+      };
+    } catch (error) {
+      console.error('Error in completeOrder:', error.message);
+      throw new InternalServerErrorException('Failed to complete the payment');
     }
   }
 }

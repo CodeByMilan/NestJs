@@ -6,5 +6,6 @@ export enum QUEUE_NAMES {
 
   export enum JOB_NAMES{
     COMPLETE_ORDER='completeOrder',
-    CANCELORDER='cancelOrder'
+    CANCEL_ORDER='cancelOrder',
+    STRIPE_SUCCESS='stripeSuccess'
   }

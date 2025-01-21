@@ -14,6 +14,7 @@ import { QueueModule } from 'src/queue/queueModule';
 import { OrderQueueProcessor } from 'src/queue/orderQueueProcessor';
 import { CustomQueryService } from 'src/customQuery/queryBuilder';
 import { User } from 'src/database/entities/user.entity';
+import { StripeService } from 'src/payment/stripe.service';
 
 @Module({
   imports:[
@@ -23,7 +24,9 @@ import { User } from 'src/database/entities/user.entity';
     forwardRef(() => QueueModule),
   ],
   controllers: [OrderController],
-  providers: [OrderService,PaymentService,ProductService,OrderQueueProcessor,CustomQueryService],
+  providers: [OrderService,PaymentService,ProductService,OrderQueueProcessor,CustomQueryService
+    ,StripeService
+  ],
   exports:[OrderService]
 })
 export class OrderModule {}

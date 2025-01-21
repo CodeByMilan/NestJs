@@ -31,7 +31,8 @@ import { WishListModule } from './modules/wishlist/wishlist.module';
     OrderModule,
     CartModule,
     DatabaseModule,
-    WishListModule
+    WishListModule,
+
   ],
   providers:[NodeMailerService]
 })

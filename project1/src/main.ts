@@ -4,12 +4,18 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { TransformInterceptor } from './interceptors/responseInterceptor';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   //application instance
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true });
   //applying global interceptor to send response 
   app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
   // Configure Swagger options
   const config = new DocumentBuilder()
     .setTitle('E-commerce')

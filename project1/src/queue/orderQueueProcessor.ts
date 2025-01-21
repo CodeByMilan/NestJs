@@ -19,7 +19,7 @@ export class OrderQueueProcessor {
     }
   }
 
-  @Process(JOB_NAMES.CANCELORDER)
+  @Process(JOB_NAMES.CANCEL_ORDER)
   async cancelOrder(job: Job<any>, token?: string): Promise<any> {
     
     console.log(`Processing job ${job.id} of type ${job.name}`);
@@ -31,4 +31,20 @@ export class OrderQueueProcessor {
       throw error;
     }
   }
+
+
+
+  @Process(JOB_NAMES.STRIPE_SUCCESS)
+  async stripeSuccess(job: Job<any>, token?: string): Promise<any> {
+    console.log(job)
+  const {sessionId} = job.data;
+    try {
+      await this.orderService.completeStripeSuccess(sessionId);
+      console.log(`Order ${job.data.sessionId} completed successfully`);
+    } catch (error) {
+      console.error(`Error completing order ${job.data.sessionId}:`, error);
+      throw error;
+    }
+  }
+
 }

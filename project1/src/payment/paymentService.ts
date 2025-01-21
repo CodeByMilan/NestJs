@@ -58,7 +58,7 @@ export class PaymentService {
     }
   }
 
-  async createOrder(productId: number, amount: number,quantity:number,items:IOrderDetail[]): Promise<any> {
+  async createOrder(productId: number, amount: number,items:IOrderDetail[]): Promise<any> {
     const accessToken = await this.generateAccessToken();
     const url = `${process.env.PAYPAL_BASE_URL}/v2/checkout/orders`;
     const productData = await this.productService.findOne(productId);

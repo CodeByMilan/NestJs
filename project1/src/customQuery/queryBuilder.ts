@@ -22,7 +22,6 @@ export class CustomQueryService {
   }
 
   async findOrdersByUserId(userId:number):Promise<Order[]>{
-
     const query =this.orderRepository.createQueryBuilder('order')
     .innerJoinAndSelect('order.user', 'user')
     .where('order.userId = :userId', { userId });

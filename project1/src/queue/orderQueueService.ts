@@ -11,9 +11,16 @@ export class OrderQueueService {
 
   async addCompleteOrderJob(paypalOrderId: string) {
     await this.orderQueue.add(JOB_NAMES.COMPLETE_ORDER, { paypalOrderId }, {
-      delay:5*60*1000,
+      delay:3000000,
       attempts: 1, 
       backoff: 60000, 
-    });
+    })
+  }
+  async addStripeComplete(sessionId:string){
+    await this.orderQueue.add(JOB_NAMES.STRIPE_SUCCESS, { sessionId }, {
+      delay:5*60*1000,
+      attempts: 1,
+      backoff: 60000,
+      });
   }
 }

@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsDecimal, IsString } from "class-validator";
-import { PAYMENTMETHOD, PAYMENTSTATUS } from "src/database/entities/payment.entity";
+import { PAYMENT_METHOD, PAYMENT_STATUS } from "src/database/entities/payment.entity";
 
 export interface IOrderDetail{
     quantity:number,
@@ -20,8 +20,8 @@ export class CreateOrderDto {
     amount:number
     @ApiProperty()
     paymentDetails:{
-        paymentMethod:PAYMENTMETHOD,
-        paymentStatus:PAYMENTSTATUS
+        paymentMethod:PAYMENT_METHOD,
+        paymentStatus:PAYMENT_STATUS
     }
     @ApiProperty()
     items:IOrderDetail[]
