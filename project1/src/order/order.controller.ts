@@ -28,8 +28,9 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('order')
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
-
+  constructor(private readonly orderService: OrderService,
+  
+  ) {}
   @Roles(ROLE.CUSTOMER)
   @Post('add')
   async createOrder(
@@ -158,4 +159,5 @@ export class OrderController {
       throw new InternalServerErrorException('Failed to complete the payment');
     }
   }
+
 }

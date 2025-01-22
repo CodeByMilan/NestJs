@@ -5,6 +5,7 @@ import { TransformInterceptor } from './interceptors/responseInterceptor';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { ValidationPipe } from '@nestjs/common';
+import { EventGateWay } from './socket/event.gateway';
 
 async function bootstrap() {
   //application instance
@@ -40,6 +41,12 @@ app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('hbs');
 
-  await app.listen(3000);
+  //this is used to listen to some events as soon as the client connects
+// const eventGateWay=app.get(EventGateWay);
+// setInterval(()=>eventGateWay.sendMessage(),2000)
+
+  await app.listen(3000,'192.168.1.101')
+  
+  console.log('server is listening on  ',await app.getUrl())
 }
 bootstrap();

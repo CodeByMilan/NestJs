@@ -15,6 +15,7 @@ import { OrderQueueProcessor } from 'src/queue/orderQueueProcessor';
 import { CustomQueryService } from 'src/customQuery/queryBuilder';
 import { User } from 'src/database/entities/user.entity';
 import { StripeService } from 'src/payment/stripe.service';
+import { EventGateWayModule } from 'src/socket/event.module';
 
 @Module({
   imports:[
@@ -22,6 +23,7 @@ import { StripeService } from 'src/payment/stripe.service';
     JwtModule,
     HttpModule,
     forwardRef(() => QueueModule),
+    EventGateWayModule
   ],
   controllers: [OrderController],
   providers: [OrderService,PaymentService,ProductService,OrderQueueProcessor,CustomQueryService

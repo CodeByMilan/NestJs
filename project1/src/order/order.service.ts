@@ -1,12 +1,10 @@
 import {
   BadRequestException,
   ConflictException,
-  Delete,
   Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  Req,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -18,12 +16,12 @@ import {
   PAYMENT_METHOD,
   PAYMENT_STATUS,
 } from 'src/database/entities/payment.entity';
-import { OrderDetail } from 'src/database/entities/orderDetails.entity';
 import { PaymentService } from 'src/payment/paymentService';
 import { CustomQueryService } from 'src/customQuery/queryBuilder';
 import { StripeService } from 'src/payment/stripe.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { EventGateWay } from 'src/socket/event.gateway';
 @Injectable()
 export class OrderService {
   constructor(
@@ -36,6 +34,7 @@ export class OrderService {
     private readonly stripeService: StripeService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private readonly eventGateWay:EventGateWay
   ) {}
 
   async getOrdersByUserId(userId: number): Promise<Order[]> {

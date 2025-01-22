@@ -10,6 +10,8 @@ import { redisStore } from 'cache-manager-redis-yet';
 import { config } from 'dotenv';
 import { NodeMailerService } from './utils/mail/nodeMailer.service';
 import { WishListModule } from './modules/wishlist/wishlist.module';
+import { EventGateWayModule } from './socket/event.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { WishListModule } from './modules/wishlist/wishlist.module';
     CartModule,
     DatabaseModule,
     WishListModule,
+    EventGateWayModule,
+    JwtModule
 
   ],
   providers:[NodeMailerService]

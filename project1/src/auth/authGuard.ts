@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/custom/public.decorator';
+import { Socket } from 'socket.io'
 
 export interface AuthRequest extends Request {
   user?: {
@@ -32,35 +33,70 @@ export class AuthGuard implements CanActivate {
     if (isPublic) {
       return true; 
     }
+      // Check if the context is WebSocket
+      if (context.getType() === 'ws') {
+        const client: Socket = context.switchToWs().getClient();
+        const token = this.extractTokenFromSocket(client);
+  
+        if (!token) {
+          throw new UnauthorizedException('Token not provided in WebSocket');
+        }
+  
+        try {
+          const payload = await this.jwtService.verifyAsync(token, {
+            secret: process.env.JWT_SECRET,
+          });
+  
+          if (!payload.role) {
+            throw new UnauthorizedException('Invalid token: Role missing');
+          }
+  
+          client.data.user = payload; 
+          return true;
+        } catch (error) {
+          console.error('WebSocket token verification failed:', error.message);
+          throw new UnauthorizedException('Invalid or expired token in WebSocket');
+        }
+      }
 
     const request = context.switchToHttp().getRequest<AuthRequest>();
     const token = this.extractTokenFromHeader(request);
-    // console.log("token",token)
 
     if (!token) {
       throw new UnauthorizedException('Token not provided');
     }
 
     try {
-      // console.log("jwt_secretkey",process.env.JWT_SECRET)
       const payload = await this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
-      // console.log("payload:",payload)
-
       if (!payload.role) {
         throw new UnauthorizedException('Invalid token: Role missing');
       }
 
       request.user = payload;
+
       return true;
     } catch (error) {
       console.error('Token verification failed:', error.message);
       throw new UnauthorizedException('Invalid or expired token');
     }
   }
+  private extractTokenFromSocket(client: Socket): string | undefined {
+    // Token from WebSocket headers
+    const authorization = client.handshake.headers.authorization;
 
-  private extractTokenFromHeader(request: AuthRequest): string | undefined {
+    if (authorization) {
+      const [type, token] = authorization.split(' ');
+      return type === 'Bearer' ? token : undefined;
+    }
+
+    // Token from WebSocket query
+    return client.handshake.query.token as string;
+  }
+ 
+
+ private extractTokenFromHeader(request: AuthRequest): string | undefined {
     const authorization = request.headers.authorization;
 
     if (!authorization) {
