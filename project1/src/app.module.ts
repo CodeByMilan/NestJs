@@ -30,8 +30,8 @@ import { RedisConfig } from './config/redis.config';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         store: redisStore as unknown as string,
-        ttl: 60 * 1000, // 1 minute
-        ...RedisConfig(configService), // Use the factory function correctly
+        ttl: 60 * 1000, 
+        ...RedisConfig(configService), 
       }),
     }),
     UserModule,

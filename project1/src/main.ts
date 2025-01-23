@@ -5,7 +5,7 @@ import { TransformInterceptor } from './interceptors/responseInterceptor';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { ValidationPipe } from '@nestjs/common';
-import { EventGateWay } from './socket/event.gateway';
+
 
 async function bootstrap() {
   //application instance
