@@ -1,9 +1,9 @@
-services:
-  app:
-    image: nestjs-image
-    container_name: nestjs
-    ports:
-      - 3000:3000
+# services:
+#   app:
+#     image: nestjs-image
+#     container_name: nestjs
+#     ports:
+#       - 3000:3000
   
 
   
