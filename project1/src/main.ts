@@ -45,8 +45,6 @@ app.useStaticAssets(join(__dirname, '..', 'public'));
 // const eventGateWay=app.get(EventGateWay);
 // setInterval(()=>eventGateWay.sendMessage(),2000)
 
-  await app.listen(3000,'192.168.1.101')
-  
-  console.log('server is listening on  ',await app.getUrl())
+  await app.listen(3000)
 }
 bootstrap();

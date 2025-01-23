@@ -3,16 +3,18 @@ import { forwardRef, Module } from '@nestjs/common';
 import { OrderQueueService } from './orderQueueService';
 import { OrderModule } from 'src/order/order.module';
 import { QUEUE_NAMES } from './queueTypes';
+import {  ConfigService } from '@nestjs/config';
+import { RedisConfig } from 'src/config/redis.config';
 
 
 @Module({
   imports: [
-  BullModule.forRoot({
-    redis: {
-      host: process.env.REDIS_HOST,
-      port: parseInt(process.env.REDIS_PORT)||6379,
-    },
-  }),
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        redis: RedisConfig(configService),
+      }),
+    }),
     BullModule.registerQueue({
       name: QUEUE_NAMES.ORDER, 
       defaultJobOptions: {

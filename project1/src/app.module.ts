@@ -1,17 +1,19 @@
 import { Module } from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { DatabaseModule } from './database/database.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { CartModule } from './cart/cart.module';
 import { CacheModule } from '@nestjs/cache-manager';
-import { redisStore } from 'cache-manager-redis-yet';
+
 import { config } from 'dotenv';
 import { NodeMailerService } from './utils/mail/nodeMailer.service';
 import { WishListModule } from './modules/wishlist/wishlist.module';
 import { EventGateWayModule } from './socket/event.module';
 import { JwtModule } from '@nestjs/jwt';
+import * as redisStore from 'cache-manager-redis-store';
+import { RedisConfig } from './config/redis.config';
 
 @Module({
   imports: [
@@ -23,10 +25,14 @@ import { JwtModule } from '@nestjs/jwt';
     // MulterModule.register({
     //   dest: './uploads',
     // }),
-    CacheModule.register({
+    CacheModule.registerAsync({
       isGlobal: true,
-      ttl: 1000 * 1000,
-      store: redisStore,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        store: redisStore as unknown as string,
+        ttl: 60 * 1000, // 1 minute
+        ...RedisConfig(configService), // Use the factory function correctly
+      }),
     }),
     UserModule,
     ProductModule,
