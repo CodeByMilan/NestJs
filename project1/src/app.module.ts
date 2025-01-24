@@ -14,6 +14,9 @@ import { EventGateWayModule } from './socket/event.module';
 import { JwtModule } from '@nestjs/jwt';
 import * as redisStore from 'cache-manager-redis-store';
 import { RedisConfig } from './config/redis.config';
+import { RedisModule } from './redis-module/redis.module';
+
+
 
 @Module({
   imports: [
@@ -41,7 +44,8 @@ import { RedisConfig } from './config/redis.config';
     DatabaseModule,
     WishListModule,
     EventGateWayModule,
-    JwtModule
+    JwtModule,
+    RedisModule
 
   ],
   providers:[NodeMailerService]

@@ -28,14 +28,13 @@ export class UserService {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
     private readonly configService: ConfigService,
-    private readonly customQuery:CustomQueryService
+    private readonly customQuery: CustomQueryService,
   ) {}
 
   async getUsersWithOrders(): Promise<User[]> {
     return this.customQuery.findUserWithOrders();
   }
 
-  
   async getAllUsers(role?: ROLE): Promise<User[]> {
     if (role) {
       const users = await this.userRepository.find({ where: { role } });
@@ -114,13 +113,13 @@ export class UserService {
     if (!userData) {
       throw new Error('Invalid or expired token.');
     }
-    const { email} = JSON.parse(userData);
+    const { email } = JSON.parse(userData);
     // Delete the token from Redis
     await this.cacheManager.del(`emailVerification:${token}`);
     return {
-       message: `${email} verified successfully!` };
+      message: `${email} verified successfully!`,
+    };
   }
 
-
-  
 }
+

@@ -11,12 +11,15 @@ import { NodeMailerService } from 'src/utils/mail/nodeMailer.service';
 import { TwilioService } from 'src/utils/twilio/twilioService';
 import { CustomQueryService } from '../customQuery/queryBuilder';
 import { Order } from 'src/database/entities/order.entity';
+import { RedisModule } from 'src/redis-module/redis.module';
+
 
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User,Order]),
-    JwtModule
+    JwtModule,
+    RedisModule
   ],
   controllers: [UserController],
   providers: [CloudinaryProvider, UserService,UserAuthenticationService,AdminSeederService,NodeMailerService,
