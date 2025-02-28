@@ -1,4 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class SongsService {}
+export class SongsService {
+    constructor(private songService:SongsService){}
+
+
+
+    
+}

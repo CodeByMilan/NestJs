@@ -12,8 +12,14 @@ export class RedisService {
     const time=5*1000
     await this.redisRepository.set(key, value,time);
   }
-  async getKey(key: string) {
-    return await this.redisRepository.get(key);
+  async getKey(key: string): Promise<string | null> {
+    try {
+      const value = await this.redisRepository.get(key);
+      return value; // Returns `null` if the key does not exist
+    } catch (error) {
+      console.error(`Error fetching key "${key}":`, error.message);
+      throw new Error('Failed to fetch the key from Redis');
+    }
   }
 
   async getWrongPassswordAttempt(key: string) {

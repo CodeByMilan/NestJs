@@ -41,8 +41,8 @@ import {
 } from 'src/utils/twilio/smsTypes.dto';
 @ApiTags('user')
 @Controller('user')
-@Authenticated()
-@UseGuards(AuthGuard, RolesGuard)
+// @Authenticated()
+// @UseGuards(AuthGuard, RolesGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -51,6 +51,19 @@ export class UserController {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
+  @Post('count')
+  @Public()
+  async increase(@Body() key:string){
+    console.log('isndie controller')
+    let value
+    try{
+       value = await this.userService.IncreaseCount(key)
+    
+    }catch(error){
+      console.log(error)
+    }
+    return value
+  }
   @Post('register')
   @Public()
   @Render('mailTemplate')
