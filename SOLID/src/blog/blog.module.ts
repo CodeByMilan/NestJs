@@ -3,9 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlogService } from './blog.service';
 import { BlogController } from './blog.controller';
 import { Blog } from './entities/blog.entity';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Blog])],
+  imports: [EmailModule,
+    TypeOrmModule.forFeature([Blog])],
   controllers: [BlogController],
   providers: [BlogService],
 })
