@@ -14,12 +14,6 @@ export class Blog {
   @Column({ default: 0 })
   donationAmount: number;
 
-  @Column({ nullable: true })  
-  category?: string;
-
-  @Column({ nullable: true }) 
-  location?: string;
-
   @CreateDateColumn()
   createdAt: Date;
 }

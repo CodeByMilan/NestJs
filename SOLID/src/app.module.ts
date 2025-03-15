@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlogModule } from './blog/blog.module';
 import { EmailModule } from './email/email.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [

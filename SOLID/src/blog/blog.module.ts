@@ -4,12 +4,13 @@ import { BlogService } from './blog.service';
 import { BlogController } from './blog.controller';
 import { Blog } from './entities/blog.entity';
 import { EmailModule } from 'src/email/email.module';
-import { TechnicalBlogService } from './technical-blog.service';
-import { TravelBlogService } from './travel-blog.service';
+import { PaymentModule } from 'src/payment/payment.module';
 
 @Module({
-  imports: [EmailModule, TypeOrmModule.forFeature([Blog])],
+  imports: [EmailModule,
+    PaymentModule,
+    TypeOrmModule.forFeature([Blog])],
   controllers: [BlogController],
-  providers: [BlogService, TechnicalBlogService, TravelBlogService],
+  providers: [BlogService],
 })
 export class BlogModule {}
