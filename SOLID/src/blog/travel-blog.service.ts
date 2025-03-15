@@ -5,7 +5,7 @@ import { BlogCreator } from './blog-creator.abstract';
 import { Blog } from './entities/blog.entity';
 
 @Injectable()
-export class BlogService extends BlogCreator {
+export class TravelBlogService extends BlogCreator {
   constructor(
     @InjectRepository(Blog)
     private readonly blogRepository: Repository<Blog>,
@@ -14,11 +14,11 @@ export class BlogService extends BlogCreator {
   }
 
   async createBlog(title: string, content: string): Promise<Blog> {
-    const blog = this.blogRepository.create({ title, content });
+    const blog = this.blogRepository.create({
+      title,
+      content,
+      location: 'Unknown',
+    });
     return await this.blogRepository.save(blog);
-  }
-
-  async getAllBlogs(): Promise<Blog[]> {
-    return await this.blogRepository.find();
   }
 }
